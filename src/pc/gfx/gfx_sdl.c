@@ -38,9 +38,8 @@
 
 // cimgui
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-#include "cimgui.h"
-#include "cimgui_impl_sdl2.h"
-#include "cimgui_impl_opengl3.h"
+#include "cimgui/cimgui.h"
+#include "cimgui/cimgui_impl.h"
 // derect init
 #include "../derect/ui.h"
 
