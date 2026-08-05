@@ -47,7 +47,9 @@ void derect_panel_render(bool* p_open) {
     igSetNextWindowPos((ImVec2){io->DisplaySize.x * 0.5f, 20}, ImGuiCond_Always, (ImVec2){0.5f, 0.0f});
     igBegin("TopBar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
     
-    for (int i = 0; i < 9; i++) {
+    int tab_count = sizeof(top_tabs) / sizeof(top_tabs[0]);
+    
+    for (int i = 0; i < tab_count; i++) {
         if (i > 0) igSameLine(0, 8);
         if (active_tab == i) {
             igPushStyleColor_Vec4(ImGuiCol_Button, (ImVec4){0.8f, 0.2f, 0.2f, 1.0f}); // 选中红框/红块

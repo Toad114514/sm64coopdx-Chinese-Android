@@ -65,6 +65,8 @@ void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
     
     // igBegin(cat_name, NULL, ImGuiWindowFlags_NoTitleBar);
     
+    // flags
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize;
     bool visible = igBegin(cat_name, NULL, flags);
     
     // 自定义分类 Header
