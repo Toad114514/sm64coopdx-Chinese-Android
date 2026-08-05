@@ -4126,7 +4126,7 @@ CIMGUI_API ImGuiContext* igCreateContext(ImFontAtlas* shared_font_atlas);
 CIMGUI_API void igDestroyContext(ImGuiContext* ctx);
 CIMGUI_API ImGuiContext* igGetCurrentContext(void);
 CIMGUI_API void igSetCurrentContext(ImGuiContext* ctx);
-CIMGUI_API ImGuiIO* igGetIO_Nil(void);
+CIMGUI_API ImGuiIO* igGetIO(void);
 CIMGUI_API ImGuiPlatformIO* igGetPlatformIO_Nil(void);
 CIMGUI_API ImGuiStyle* igGetStyle(void);
 CIMGUI_API void igNewFrame(void);

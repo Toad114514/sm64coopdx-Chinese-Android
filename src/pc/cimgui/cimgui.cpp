@@ -161,7 +161,7 @@ CIMGUI_API void igSetCurrentContext(ImGuiContext* ctx)
 {
     return ImGui::SetCurrentContext(ctx);
 }
-CIMGUI_API ImGuiIO* igGetIO_Nil()
+CIMGUI_API ImGuiIO* igGetIO()
 {
     return &ImGui::GetIO();
 }
