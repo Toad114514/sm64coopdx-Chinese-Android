@@ -261,8 +261,6 @@ static void gfx_sdl_init(const char *window_title) {
         SDL_ShowCursor(SDL_DISABLE);
     }
     
-    Module_InitRegistry();
-    
     // init inject imgui
     derect_initImgui(wnd, ctx);
 

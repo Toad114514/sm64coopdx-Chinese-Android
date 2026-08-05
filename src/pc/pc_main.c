@@ -72,6 +72,7 @@
 
 #include "pc/mumble/mumble.h"
 
+#include "derect/module.h"
 #if defined(_WIN32)
 #include <windows.h>
 #endif
@@ -478,7 +479,6 @@ void game_exit(void) {
 void* main_game_init(UNUSED void* dummy) {
     // load language
     if (!djui_language_init(configLanguage)) { snprintf(configLanguage, MAX_CONFIG_STRING, "%s", ""); }
-
     LOADING_SCREEN_MUTEX(loading_screen_set_segment_text("Loading"));
     dynos_gfx_init();
     enable_queued_dynos_packs();
@@ -496,7 +496,7 @@ void* main_game_init(UNUSED void* dummy) {
     enable_queued_mods();
     LOADING_SCREEN_MUTEX(
         gCurrLoadingSegment.percentage = 0;
-        loading_screen_set_segment_text("Starting Game");
+        loading_screen_set_segment_text("Have you a great Decoration Life for Rectangle?");
     );
 
     audio_init();
@@ -552,7 +552,7 @@ int main(int argc, char *argv[]) {
 #else
     fs_init(gCLIOpts.savePath[0] ? gCLIOpts.savePath : sys_user_path());
 #endif
-
+    Module_InitRegistry();
     configfile_load();
 
     legacy_folder_handler();
