@@ -1,4 +1,4 @@
-package com.shangshanruo666.sm64coopdxcnsv;
+package com.toad1145.derectcoopdxcn;
 
 import android.app.AlertDialog;
 import android.text.InputType;

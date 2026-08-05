@@ -13,7 +13,7 @@ android {
     compileSdkVersion 33
     defaultConfig {
         if (buildAsApplication) {
-            applicationId "com.shangshanruo666.sm64coopdxcnsv"
+            applicationId "com.toad1145.derectcoopdxcn"
         }
         multiDexEnabled false
         minSdkVersion 24
@@ -64,7 +64,7 @@ android {
         }
     }
     preBuild.dependsOn copyGameAssets
-    namespace 'com.shangshanruo666.sm64coopdxcnsv'
+    namespace 'com.toad1145.derectcoopdxcn'
     lint {
         abortOnError false
     }
