@@ -112,12 +112,56 @@ static void gfx_sdl_set_fullscreen(void) {
 
 ///////////////////// Derect ImGUI Render
 
+void Derect_RebuildFontTexture(void) {
+    ImGuiIO* io = igGetIO();
+
+    unsigned char* pixels = NULL;
+    int width = 0, height = 0, bytes_per_pixel = 0;
+
+    // 1. 【核心烘培步骤】：获取 RGBA32 像素数据
+    // 调用 GetTexDataAsRGBA32 会自动触发 ImGui 内部的字体栅格化/烘培 (Build)
+    ImFontAtlas_GetTexDataAsRGBA32(io->Fonts, &pixels, &width, &height, &bytes_per_pixel);
+
+    if (!pixels || width <= 0 || height <= 0) return;
+
+    // 2. 获取并销毁旧的 GPU 字体纹理（防止显存泄漏）
+    GLuint old_texture = (GLuint)(uintptr_t)ImFontAtlas_GetTexID(io->Fonts);
+    if (old_texture != 0) {
+        glDeleteTextures(1, &old_texture);
+    }
+
+    // 3. 在 OpenGL 中生成一张新的 GPU 2D 纹理
+    GLuint new_texture = 0;
+    glGenTextures(1, &new_texture);
+    glBindTexture(GL_TEXTURE_2D, new_texture);
+
+    // 设置纹理过滤参数（Linear 适合高分辨率屏，Nearest 适合像素风）
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // 设置 Unpack 像素对齐（ImGui 推荐 1 字节对齐）
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // 4. 将烘培好的像素数组上传至 OpenGL GPU 显存
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+    // 5. 将新的 OpenGL 纹理句柄绑定回 ImGui 字体图集
+    ImFontAtlas_SetTexID(io->Fonts, (ImTextureID)(uintptr_t)new_texture);
+}
+
 void Derect_InitFont(void) {
     ImGuiIO* io = igGetIO();
 
-    // 1. 获取简体中文常用字符集（关键！没有这个中文会显示为方块）
-    const ImWchar* glyph_ranges = ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(io->Fonts);
-
+    // glyph Unicode...::
+    static const ImWchar glyph_ranges[] = {
+        0x0020, 0x00FF, // english
+        0x2000, 0x206F, // 常用标点
+        0x3000, 0x30FF, // CJK 符号/标点
+        0x4E00, 0x9FAF, // CJK 统一汉字
+        0xFF00, 0xFFEF, // 全角与半角
+        0,
+    };
+    
     // 2. 加载 TTF 字体文件
     ImFont* custom_font = ImFontAtlas_AddFontFromFileTTF(
         io->Fonts,
@@ -132,6 +176,8 @@ void Derect_InitFont(void) {
         // 加载失败时自动退回默认字体
         ImFontAtlas_AddFontDefault(io->Fonts, NULL);
     }
+    
+    Derect_RebuildFontTexture();
 }
 
 void derect_initImgui(SDL_Window* window, SDL_GLContext gl_context) {
