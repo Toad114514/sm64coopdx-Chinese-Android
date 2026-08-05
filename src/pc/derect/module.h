@@ -3,6 +3,10 @@
 
 #include "../cimgui/cimgui.h"
 
+#ifndef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#endif
+
 // 模块分类定义
 typedef enum {
     CAT_FILE = 0,
