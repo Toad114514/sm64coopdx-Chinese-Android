@@ -36,6 +36,11 @@
 #include "../configfile.h"
 #include "../cliopts.h"
 
+// imgui init
+#include "../imgui/imgui.h"
+#include "../imgui/backends/imgui_impl_sdl2.h"
+#include "../imgui/backends/imgui_impl_opengl3.h"
+
 #include "pc/controller/controller_keyboard.h"
 #ifdef TOUCH_CONTROLS
 #include "pc/controller/controller_touchscreen.h"
@@ -74,6 +79,8 @@ static void (*touch_up_callback)(void* event);
 
 static void (*m_scroll)(float, float) = NULL;
 
+static gInitedImgui = false;
+
 #define IS_FULLSCREEN() ((SDL_GetWindowFlags(wnd) & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
 
 static inline void gfx_sdl_set_vsync(const bool enabled) {
@@ -92,6 +99,31 @@ static void gfx_sdl_set_fullscreen(void) {
         SDL_ShowCursor(1);
         configWindow.exiting_fullscreen = true;
     }
+}
+
+void derect_initImgui(SDL_Window* window, SDL_GLContext gl_context) {
+    if (gInitedImgui) return;
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    
+    // 启用触屏拖拽滑动支持
+    io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+
+    // 适配 Android 触屏与高 DPI 屏幕
+    ImGui::StyleColorsDark();
+    
+    // 调整字体大小，防止在 Android 高分屏（如 1080p/2k）上字体过小
+    float dpi_scale = 2.0f; // 可根据实际屏幕 DPI 动态计算
+    io.Fonts->AddFontDefault();
+    ImGui::GetStyle().ScaleAllSizes(dpi_scale);
+
+    // 初始化 SDL2 与 OpenGL ES3 后端 (GLES 3.0 写 "#version 300 es"，GLES 2.0 写 "#version 100")
+    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+    ImGui_ImplOpenGL3_Init("#version 300 es");
+
+    gInitedImgui = true;
 }
 
 static void gfx_sdl_reset_dimension_and_pos(void) {
@@ -169,6 +201,8 @@ static void gfx_sdl_init(const char *window_title) {
     if (configWindow.fullscreen) {
         SDL_ShowCursor(SDL_DISABLE);
     }
+    
+    derect_initImgui();
 
     controller_bind_init();
 }
@@ -295,6 +329,20 @@ static void gfx_sdl_fingerup(SDL_TouchFingerEvent sdl_event) {
 static void gfx_sdl_handle_events(void) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
+        // imgui_fucked
+        ImGui_ImplSDL2_ProcessEvent(&event);
+        ImGuiIO& io = ImGui::GetIO();
+    
+        if (io.WantCaptureMouse && (event.type == SDL_MOUSEBUTTONDOWN || 
+                                    event.type == SDL_MOUSEBUTTONUP || 
+                                    event.type == SDL_MOUSEMOTION || 
+                                    event.type == SDL_FINGERDOWN || 
+                                    event.type == SDL_FINGERUP || 
+                                    event.type == SDL_FINGERMOTION)) {
+            continue;
+        }
+        
+        // original
         switch (event.type) {
             case SDL_TEXTINPUT:
                 kb_text_input(event.text.text);
