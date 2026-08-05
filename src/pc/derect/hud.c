@@ -1,4 +1,6 @@
+#include "../cimgui/cimgui.h"
 #include "hud.h"
+#include "module.h"
 
 void Derect_RenderHUD(void) {
     ImGuiIO* io = igGetIO();
