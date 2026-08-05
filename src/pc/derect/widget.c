@@ -11,7 +11,7 @@
 // label: 模块名, active: 开启状态, shortcut: 快捷键文本(可为NULL), is_cyan: 是否使用青色高亮(如GUIBlur)
 bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, bool is_cyan) {
     ImVec2 avail;
-    igGetContentRegionAvail(&avail);
+    igGetContentRegionAvail();
     ImVec2 item_size = (ImVec2){avail.x, 24.0f};
 
     // 设置激活时的背景色（鲜绿色 或 青色）
@@ -40,7 +40,7 @@ bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, 
 
     if (shortcut && shortcut[0] != '\0') {
         ImVec2 sc_size;
-        igCalcTextSize(&sc_size, shortcut, NULL, false, -1.0f);
+        igCalcTextSize(shortcut, NULL, false, -1.0f);
         igSetCursorScreenPos((ImVec2){end_x - sc_size.x - 18.0f, top_y});
         igTextDisabled("%s", shortcut);
     }
