@@ -236,6 +236,10 @@
 #define GL_CALL(_CALL)      _CALL   // Call without error check
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // OpenGL Data
 struct ImGui_ImplOpenGL3_Data
 {
@@ -1209,3 +1213,7 @@ static void ImGui_ImplOpenGL3_ShutdownMultiViewportSupport()
 #endif
 
 #endif // #ifndef IMGUI_DISABLE
+
+#ifdef __cplusplus
+}
+#endif

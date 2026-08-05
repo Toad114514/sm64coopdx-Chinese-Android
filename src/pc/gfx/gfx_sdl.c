@@ -86,6 +86,25 @@
 // }
 // #endif
 
+// C-Linkage
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+bool ImGui_ImplSDL2_InitForOpenGL(void* window, void* sdl_gl_context);
+void ImGui_ImplSDL2_NewFrame(void);
+bool ImGui_ImplSDL2_ProcessEvent(const void* event);
+void ImGui_ImplSDL2_Shutdown(void);
+
+bool ImGui_ImplOpenGL3_Init(const char* glsl_version);
+void ImGui_ImplOpenGL3_NewFrame(void);
+void ImGui_ImplOpenGL3_RenderDrawData(void* draw_data);
+void ImGui_ImplOpenGL3_Shutdown(void);
+
+#ifdef __cplusplus
+}
+#endif
+
 static SDL_Window *wnd;
 static SDL_GLContext ctx = NULL;
 

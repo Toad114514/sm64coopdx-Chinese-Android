@@ -158,6 +158,11 @@
 static const Uint32 SDL_WINDOW_VULKAN = 0x10000000;
 #endif
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // SDL Data
 struct ImGui_ImplSDL2_Data
 {
@@ -1356,3 +1361,7 @@ static void ImGui_ImplSDL2_ShutdownMultiViewportSupport()
 #endif
 
 #endif // #ifndef IMGUI_DISABLE
+
+#ifdef __cplusplus
+}
+#endif
