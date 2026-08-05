@@ -6,6 +6,17 @@
 #include "hud.h"
 #include "module.h"
 
+// 辅助彩虹
+#include <math.h>
+
+static ImVec4 GetRainbowColor(float offset, float speed) {
+    float time = (float)igGetTime();
+    float hue = fmodf(time * speed + offset, 1.0f);
+    float r, g, b;
+    igColorConvertHSVtoRGB(hue, 1.0f, 1.0f, &r, &g, &b);
+    return (ImVec4){r, g, b, 1.0f};
+}
+
 void Derect_RenderHUD(void) {
     int count = 0;
     // moduless
@@ -26,9 +37,13 @@ void Derect_RenderHUD(void) {
     igBegin("##Vape_ArrayList_HUD", NULL, hud_flags);
 
     // 3. 遍历并渲染所有开启的模块
+    int visible_index = 0;
     for (int i = 0; i < count; i++) {
         if (modules[i].enabled) {
-            igTextColored(modules[i].color, "%s", modules[i].name);
+            ImVec4 rainbow = GetRainbowColor(visible_index * 0.08f, 0.3f);
+            igTextColored(rainbow, "%s", modules[i].name);
+            // modules[i].color 跟随模块， rainbow_color 就是彩色
+            visible_index++;
         }
     }
 

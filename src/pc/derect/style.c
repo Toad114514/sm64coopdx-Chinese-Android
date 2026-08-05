@@ -24,6 +24,8 @@
 void derect_initStyle(void) {
     ImGuiStyle* style = igGetStyle();
     ImVec4* colors = style->Colors;
+    
+    io->FontGlobalScale = 1.8f; // Android Support
 
     // 布局尺寸调整
     style->WindowPadding = (ImVec2){6, 6};

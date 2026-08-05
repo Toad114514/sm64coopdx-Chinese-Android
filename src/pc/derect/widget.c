@@ -47,7 +47,7 @@ bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, 
         igTextDisabled(":");
     }
 
-    igPopStyleColor(3);
+    igPopStyleColor(2);
     return clicked;
 }
 
@@ -59,8 +59,8 @@ void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
     if (!modules || count <= 0) return; // if not then fuck
 
     igSetNextWindowPos(pos, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
-    igSetNextWindowSize((ImVec2){200, 400}, ImGuiCond_FirstUseEver);
-
+    // igSetNextWindowSize((ImVec2){200, 400}, ImGuiCond_FirstUseEver);
+    igSetNextWindowSize((ImVec2){260.0f, 0.0f}, ImGuiCond_FirstUseEver); // for Phone
     const char* cat_name = Module_GetCategoryName(target_cat);
     
     // igBegin(cat_name, NULL, ImGuiWindowFlags_NoTitleBar);
