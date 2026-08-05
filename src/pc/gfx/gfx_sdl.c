@@ -44,6 +44,7 @@
 #include "../cimgui/cimgui_impl.h"
 // derect init
 #include "../derect/ui.h"
+#include "../derect/style.h"
 
 #include "pc/controller/controller_keyboard.h"
 #ifdef TOUCH_CONTROLS
@@ -66,26 +67,6 @@
 #else
 # define FRAMERATE 30
 #endif
-// C-Linkage 
-// #ifdef __cplusplus
-// extern "C" {
-// #endif
-
-// // 显式声明后端 API 为 C 链接格式
-// bool ImGui_ImplSDL2_InitForOpenGL(void* window, void* sdl_gl_context);
-// void ImGui_ImplSDL2_NewFrame(void);
-// bool ImGui_ImplSDL2_ProcessEvent(const void* event);
-// void ImGui_ImplSDL2_Shutdown(void);
-
-// bool ImGui_ImplOpenGL3_Init(const char* glsl_version);
-// void ImGui_ImplOpenGL3_NewFrame(void);
-// void ImGui_ImplOpenGL3_RenderDrawData(void* draw_data);
-// void ImGui_ImplOpenGL3_Shutdown(void);
-
-// #ifdef __cplusplus
-// }
-// #endif
-
 
 static SDL_Window *wnd;
 static SDL_GLContext ctx = NULL;
@@ -183,7 +164,7 @@ void gfx_sdl_render_imgui(void) {
     // 2. 悬浮菜单开关按钮（方便 Android 屏幕随时展开/收起菜单）
     igSetNextWindowPos((ImVec2){10, 10}, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
     igBegin("MenuToggle", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-    if (igButton(gDerectMenu ? "Close" : "Open", (ImVec2){100, 40})) {
+    if (igButton(gDerectMenu ? "Close" : "Open", (ImVec2){100, 100})) {
         gDerectMenu = !gDerectMenu;
     }
     igEnd();
@@ -197,18 +178,6 @@ void gfx_sdl_render_imgui(void) {
     igRender();
     ImGui_ImplOpenGL3_RenderDrawData(igGetDrawData());
 }
-
-// // shutdown
-// void gfx_sdl_shutdown_imgui(void) {
-    // if (!gInitedImgui) return;
-
-    // ImGui_ImplOpenGL3_Shutdown();
-    // ImGui_ImplSDL2_Shutdown();
-    // igDestroyContext(NULL);
-
-    // gInitedImgui = false;
-// }
-
 
 //////////////// End
 
