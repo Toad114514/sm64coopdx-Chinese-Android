@@ -24,7 +24,7 @@
 // 3. 主界面渲染逻辑 (纯 C)
 // =========================================================================
 // 顶栏菜单项结构
-static const char* top_tabs[] = {"Modules", "Config", "GUI", "HUD", "Sound", "Search", "Profiles", "Apps", "About"};
+static const char* top_tabs[] = {"Modules", "Config", "GUI", "Sound", "Search", "Profiles", "About"};
 static int active_tab = 0;
 
 // 模拟模块状态
@@ -57,6 +57,20 @@ void derect_panel_render(bool* p_open) {
         }
         igPopStyleColor(1);
     }
+    
+    igSameLine(0, 16);
+
+    // Close
+    igPushStyleColor_Vec4(ImGuiCol_Button, (ImVec4){0.0f, 0.0f, 0.0f, 0.0f});
+    igPushStyleColor_Vec4(ImGuiCol_ButtonHovered, (ImVec4){0.8f, 0.1f, 0.1f, 0.8f});
+    igPushStyleColor_Vec4(ImGuiCol_ButtonActive, (ImVec4){0.6f, 0.0f, 0.0f, 1.0f});
+    igPushStyleColor_Vec4(ImGuiCol_Text, (ImVec4){0.7f, 0.7f, 0.7f, 1.0f});
+    
+    if (igButton("X##global_close", (ImVec2){20, 0})) {
+        *p_open = false;
+    }
+    igPopStyleColor(4);
+
     igEnd();
 
     // ================= 2. Render 分类窗口 =================
@@ -73,15 +87,8 @@ void derect_panel_render(bool* p_open) {
     igTextDisabled("^");
     igSeparator();
     igDummy((ImVec2){0, 2});
-
-    // 模块列表
-    VapeUI_ModuleToggle("Arraylist", &mod_arraylist, NULL, false);
-    VapeUI_ModuleToggle("Ambience", &(bool){false}, NULL, false);
-    VapeUI_ModuleToggle("AudioVisualizer", &mod_audiovisualizer, NULL, false);
-    VapeUI_ModuleToggle("BlackCapture", &mod_blackcapture, "LCtrl+NO", false);
-    VapeUI_ModuleToggle("Keystrokes", &mod_keystrokes, "LAlt+K", false);
-    VapeUI_ModuleToggle("Background", &mod_background, NULL, true); // 青色高亮
-    VapeUI_ModuleToggle("GUIBlur", &mod_guiblur, NULL, true);         // 青色高亮
+    
+    VapeUI_RenderCategoryPanel();
 
     igEnd();
 

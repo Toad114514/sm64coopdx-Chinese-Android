@@ -45,6 +45,7 @@
 // derect init
 #include "../derect/ui.h"
 #include "../derect/style.h"
+#include "../derect/hud.h"
 
 #include "pc/controller/controller_keyboard.h"
 #ifdef TOUCH_CONTROLS
@@ -476,6 +477,7 @@ static bool gfx_sdl_start_frame(void) {
 }
 
 static void gfx_sdl_swap_buffers_begin(void) {
+    Derect.RenderHUD(get_modules, get_modules_active)
     gfx_sdl_render_imgui();
     SDL_GL_SwapWindow(wnd);
 }

@@ -1,6 +1,7 @@
 // Derect Client custom Vape-Like widgets
 #include "../cimgui/cimgui.h"
 #include "widget.h"
+#include "module.h"
 
 // 渲染单个模块开关组件
 // label: 模块名, active: 开启状态, shortcut: 快捷键文本(可为NULL), is_cyan: 是否使用青色高亮(如GUIBlur)
@@ -46,4 +47,36 @@ bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, 
 
     igPopStyleColor(2);
     return clicked;
+}
+
+// 单分类面板动态渲染
+void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
+    int count = 0;
+    Module* modules = Module_GetAll(&count);
+
+    igSetNextWindowPos(pos, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
+    igSetNextWindowSize((ImVec2){200, 400}, ImGuiCond_FirstUseEver);
+
+    const char* cat_name = Module_GetCategoryName(target_cat);
+    
+    igBegin(cat_name, NULL, ImGuiWindowFlags_NoTitleBar);
+
+    // 自定义分类 Header
+    igTextDisabled("^"); igSameLine(0, 5);
+    igText("%s", cat_name);
+    igSeparator();
+
+    // 动态渲染属于当前分类的模块
+    for (int i = 0; i < count; i++) {
+        if (modules[i].category == target_cat) {
+            VapeUI_ModuleToggle(
+                modules[i].name, 
+                &modules[i].enabled, 
+                modules[i].shortcut, 
+                modules[i].is_cyan
+            );
+        }
+    }
+
+    igEnd();
 }
