@@ -510,6 +510,12 @@ endif
 
 SRC_DIRS += src/pc/mumble
 
+# cimgui/derect_client
+SRC_DIRS += src/pc/cimgui \
+            src/pc/cimgui/imgui \
+            src/pc/cimgui/imgui/backends \
+            src/pc/derect
+
 ULTRA_SRC_DIRS := lib/src lib/src/math lib/asm lib/data
 ULTRA_BIN_DIRS := lib/bin
 
@@ -1035,6 +1041,8 @@ export LANG := C
 ifeq ($(OSX_BUILD),0)
   LDFLAGS += -latomic
 endif
+
+LDFLAGS += -lstdc++
 
 #==============================================================================#
 # Extra CC Flags                                                               #
