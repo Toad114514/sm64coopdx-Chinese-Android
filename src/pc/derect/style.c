@@ -1,3 +1,7 @@
+#ifndef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#endif
+
 #include "../cimgui/cimgui.h"
 #include "style.h"
 
