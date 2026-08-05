@@ -158,7 +158,7 @@ extern "C" {
 #define SDL_HAS_OPEN_URL                    SDL_VERSION_ATLEAST(2,0,14)
 #define SDL_HAS_SHOW_WINDOW_ACTIVATION_HINT SDL_VERSION_ATLEAST(2,0,18)
 #if SDL_HAS_VULKAN
-#include <SDL_vulkan.h>
+#include <SDL2/SDL_vulkan.h>
 #else
 static const Uint32 SDL_WINDOW_VULKAN = 0x10000000;
 #endif
