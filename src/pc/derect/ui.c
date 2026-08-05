@@ -89,7 +89,7 @@ bool VapeUI_ModuleToggle(const char* label, bool* v, const char* desc) {
     float width = avail.x;
     float height = 48.0f;
 
-    // ImVec2 p;
+    ImVec2 p;
     igGetCursorScreenPos();
 
     // 隐形按钮响应触屏和点击
@@ -113,7 +113,7 @@ bool VapeUI_ModuleToggle(const char* label, bool* v, const char* desc) {
     ImDrawList_AddRect(draw_list, p_min, p_max, borderColor, 6.0f, 0, 1.2f);
 
     // 2. 文本标签与描述
-    // ImVec2 label_size;
+    ImVec2 label_size;
     igCalcTextSize(label, NULL, false, -1.0f);
 
     ImVec2 text_pos = VEC2(p_min.x + 14.0f, p_min.y + (desc ? 8.0f : (height - label_size.y) * 0.5f));
