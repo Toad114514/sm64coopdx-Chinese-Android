@@ -36,10 +36,13 @@
 #include "../configfile.h"
 #include "../cliopts.h"
 
-// imgui init
-#include "../imgui/imgui.h"
-#include "../imgui/backends/imgui_impl_sdl2.h"
-#include "../imgui/backends/imgui_impl_opengl3.h"
+// cimgui
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#include "cimgui.h"
+#include "cimgui_impl_sdl2.h"
+#include "cimgui_impl_opengl3.h"
+// derect init
+#include "../derect/ui.h"
 
 #include "pc/controller/controller_keyboard.h"
 #ifdef TOUCH_CONTROLS
@@ -79,7 +82,8 @@ static void (*touch_up_callback)(void* event);
 
 static void (*m_scroll)(float, float) = NULL;
 
-static gInitedImgui = false;
+static bool gInitedImgui = false;
+static bool gDerectMenu = false;
 
 #define IS_FULLSCREEN() ((SDL_GetWindowFlags(wnd) & SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
 
@@ -101,30 +105,91 @@ static void gfx_sdl_set_fullscreen(void) {
     }
 }
 
+///////////////////// Derect ImGUI Render
+
 void derect_initImgui(SDL_Window* window, SDL_GLContext gl_context) {
     if (gInitedImgui) return;
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
+    // 1. 创建 cimgui 上下文
+    igCreateContext(NULL);
     
-    // 启用触屏拖拽滑动支持
-    io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+    ImGuiIO* io = igGetIO();
+    io->ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 
-    // 适配 Android 触屏与高 DPI 屏幕
-    ImGui::StyleColorsDark();
+    // 2. 初始化 Vape V4 样式与触屏适配
+    derect_initStyle();
     
-    // 调整字体大小，防止在 Android 高分屏（如 1080p/2k）上字体过小
-    float dpi_scale = 2.0f; // 可根据实际屏幕 DPI 动态计算
-    io.Fonts->AddFontDefault();
-    ImGui::GetStyle().ScaleAllSizes(dpi_scale);
-
-    // 初始化 SDL2 与 OpenGL ES3 后端 (GLES 3.0 写 "#version 300 es"，GLES 2.0 写 "#version 100")
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init("#version 300 es");
 
     gInitedImgui = true;
 }
+
+bool gfx_sdl_handle_event_imgui(const SDL_Event* event) {
+    if (!gInitedImgui) return false;
+
+    // 1. 将 SDL 事件交给 cimgui 处理
+    ImGui_ImplSDL2_ProcessEvent(event);
+
+    ImGuiIO* io = igGetIO();
+
+    // break
+    if (io->WantCaptureMouse) {
+        switch (event->type) {
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+            case SDL_MOUSEMOTION:
+            case SDL_FINGERDOWN:
+            case SDL_FINGERUP:
+            case SDL_FINGERMOTION:
+                return true;
+            default:
+                break;
+        }
+    }
+
+    return false; 
+}
+
+void gfx_sdl_render_imgui(void) {
+    if (!gInitedImgui) return;
+
+    // 1. 启动 cimgui 新帧
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    igNewFrame();
+
+    // 2. 悬浮菜单开关按钮（方便 Android 屏幕随时展开/收起菜单）
+    igSetNextWindowPos((ImVec2){10, 10}, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
+    igBegin("MenuToggle", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
+    if (igButton(g_ShowVapeMenu ? "Close" : "Open", (ImVec2){100, 40})) {
+        gDerectMenu = !gDerectMenu;
+    }
+    igEnd();
+
+    // 3. 渲染 Vape V4 主界面
+    if (gDerectMenu) {
+        derect_panel_render(&gDerectMenu);
+    }
+
+    // 4. 提交 cimgui 渲染数据到 OpenGL ES
+    igRender();
+    ImGui_ImplOpenGL3_RenderDrawData(igGetDrawData());
+}
+
+// shutdown
+void gfx_sdl_shutdown_imgui(void) {
+    if (!gInitedImgui) return;
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    igDestroyContext(NULL);
+
+    g_CImGuiInitialized = false;
+}
+
+
+//////////////// End
 
 static void gfx_sdl_reset_dimension_and_pos(void) {
     if (configWindow.exiting_fullscreen) {
@@ -202,7 +267,8 @@ static void gfx_sdl_init(const char *window_title) {
         SDL_ShowCursor(SDL_DISABLE);
     }
     
-    derect_initImgui();
+    // init inject imgui
+    derect_initImgui(wnd, ctx);
 
     controller_bind_init();
 }
@@ -330,15 +396,7 @@ static void gfx_sdl_handle_events(void) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         // imgui_fucked
-        ImGui_ImplSDL2_ProcessEvent(&event);
-        ImGuiIO& io = ImGui::GetIO();
-    
-        if (io.WantCaptureMouse && (event.type == SDL_MOUSEBUTTONDOWN || 
-                                    event.type == SDL_MOUSEBUTTONUP || 
-                                    event.type == SDL_MOUSEMOTION || 
-                                    event.type == SDL_FINGERDOWN || 
-                                    event.type == SDL_FINGERUP || 
-                                    event.type == SDL_FINGERMOTION)) {
+        if (gfx_sdl_handle_event_imgui(&event)) {
             continue;
         }
         
@@ -497,6 +555,7 @@ struct GfxWindowManagerAPI gfx_sdl = {
     gfx_sdl_get_dimensions,
     gfx_sdl_handle_events,
     gfx_sdl_start_frame,
+    gfx_sdl_render_imgui,
     gfx_sdl_swap_buffers_begin,
     gfx_sdl_swap_buffers_end,
     gfx_sdl_get_time,
