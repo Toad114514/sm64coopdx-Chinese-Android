@@ -25,6 +25,13 @@ void derect_initStyle(void) {
     ImGuiStyle* style = igGetStyle();
     ImVec4* colors = style->Colors;
     
+    ImGuiIO* io = igGetIO();
+    ImFontConfig config;
+    memset(&config, 0, sizeof(ImFontConfig));
+    config.SizePixels = 26.0f; // 直接指定默认字体像素大小为 26px
+
+    ImFontAtlas_AddFontDefault(io->Fonts, &config);
+    
     ImGuiStyle_ScaleAllSizes(style, 1.8f);
 
     // 布局尺寸调整

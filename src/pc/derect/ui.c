@@ -46,7 +46,6 @@ void derect_panel_render(bool* p_open) {
     // ================= 1. 顶部导航栏 =================
     igSetNextWindowPos((ImVec2){io->DisplaySize.x * 0.5f, 20}, ImGuiCond_Always, (ImVec2){0.5f, 0.0f});
     igBegin("TopBar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
-    igSetWindowFontScale(1.8f);
     
     int tab_count = sizeof(top_tabs) / sizeof(top_tabs[0]);
     
