@@ -1,11 +1,11 @@
 #ifndef MODULE_REGISTRY_H
 #define MODULE_REGISTRY_H
 
-#include "../cimgui/cimgui.h"
-
 #ifndef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #endif
+
+#include "../cimgui/cimgui.h"
 
 // 模块分类定义
 typedef enum {

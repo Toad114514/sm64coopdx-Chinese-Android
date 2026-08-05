@@ -37,8 +37,8 @@ void Module_InitRegistry(void) {
     g_module_count = 0;
 
     // 预设常用颜色
-    ImVec4 green = {0.10f, 0.85f, 0.30f, 1.0f};
-    ImVec4 cyan  = {0.00f, 0.75f, 0.70f, 1.0f};
+    ImVec4 green = (ImVec4){0.10f, 0.85f, 0.30f, 1.0f};
+    ImVec4 cyan  = (ImVec4){0.00f, 0.75f, 0.70f, 1.0f};
 
     // ==================== 1. Render 分类 ====================
     Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, false);
