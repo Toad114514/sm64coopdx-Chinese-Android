@@ -40,6 +40,11 @@ static bool mod_guiblur = true;
 
 void derect_panel_render(bool* p_open) {
     if (!*p_open) return;
+    
+    ImFont* font = igGetFont();
+    if (font) {
+        font->Scale = 1.8f; // 设置字体缩放比例
+    }
 
     ImGuiIO* io = igGetIO();
 
