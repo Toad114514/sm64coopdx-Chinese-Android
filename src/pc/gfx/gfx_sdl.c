@@ -170,6 +170,8 @@ void gfx_sdl_render_imgui(void) {
         gDerectMenu = !gDerectMenu;
     }
     igEnd();
+    
+    Derect_RenderHUD();
 
     // 3. 渲染 Vape V4 主界面
     if (gDerectMenu) {
@@ -480,7 +482,6 @@ static bool gfx_sdl_start_frame(void) {
 }
 
 static void gfx_sdl_swap_buffers_begin(void) {
-    Derect_RenderHUD();
     gfx_sdl_render_imgui();
     SDL_GL_SwapWindow(wnd);
 }
