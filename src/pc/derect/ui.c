@@ -91,7 +91,14 @@ void derect_panel_render(bool* p_open) {
     igSeparator();
     igDummy((ImVec2){0, 2});
     
-    VapeUI_RenderCategoryPanel();
+    float start_x = 50.0f;
+    float start_y = 70.0f;
+    float panel_width = 220.0f; // 每个面板间隔宽度
+
+    for (int cat = 0; cat < CAT_COUNT; cat++) {
+        ImVec2 panel_pos = (ImVec2){start_x + cat * panel_width, start_y};
+        VapeUI_RenderCategoryPanel((ModuleCategory)cat, panel_pos);
+    }
 
     igEnd();
 
