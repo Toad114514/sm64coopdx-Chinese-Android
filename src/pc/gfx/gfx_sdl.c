@@ -164,7 +164,7 @@ void gfx_sdl_render_imgui(void) {
     // 2. 悬浮菜单开关按钮（方便 Android 屏幕随时展开/收起菜单）
     igSetNextWindowPos((ImVec2){10, 10}, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
     igBegin("MenuToggle", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground);
-    if (igButton(g_ShowVapeMenu ? "Close" : "Open", (ImVec2){100, 40})) {
+    if (igButton(gDerectMenu ? "Close" : "Open", (ImVec2){100, 40})) {
         gDerectMenu = !gDerectMenu;
     }
     igEnd();
@@ -179,16 +179,16 @@ void gfx_sdl_render_imgui(void) {
     ImGui_ImplOpenGL3_RenderDrawData(igGetDrawData());
 }
 
-// shutdown
-void gfx_sdl_shutdown_imgui(void) {
-    if (!gInitedImgui) return;
+// // shutdown
+// void gfx_sdl_shutdown_imgui(void) {
+    // if (!gInitedImgui) return;
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    igDestroyContext(NULL);
+    // ImGui_ImplOpenGL3_Shutdown();
+    // ImGui_ImplSDL2_Shutdown();
+    // igDestroyContext(NULL);
 
-    g_CImGuiInitialized = false;
-}
+    // gInitedImgui = false;
+// }
 
 
 //////////////// End
@@ -488,6 +488,7 @@ static bool gfx_sdl_start_frame(void) {
 }
 
 static void gfx_sdl_swap_buffers_begin(void) {
+    gfx_sdl_render_imgui();
     SDL_GL_SwapWindow(wnd);
 }
 
@@ -557,7 +558,6 @@ struct GfxWindowManagerAPI gfx_sdl = {
     gfx_sdl_get_dimensions,
     gfx_sdl_handle_events,
     gfx_sdl_start_frame,
-    gfx_sdl_render_imgui,
     gfx_sdl_swap_buffers_begin,
     gfx_sdl_swap_buffers_end,
     gfx_sdl_get_time,
