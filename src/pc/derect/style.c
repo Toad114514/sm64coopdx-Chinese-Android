@@ -25,6 +25,7 @@ void derect_initStyle(void) {
     ImGuiStyle* style = igGetStyle();
     ImVec4* colors = style->Colors;
     
+    ImGuiIO* io = igGetIO();
     io->FontGlobalScale = 1.8f; // Android Support
 
     // 布局尺寸调整
