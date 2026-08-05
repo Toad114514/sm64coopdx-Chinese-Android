@@ -72,6 +72,8 @@ void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
     // 自定义分类 Header
     if (visible) {
         // 自定义 Header
+        igSetWindowFontScale(1.8f);
+        
         igTextDisabled("^");
         igSameLine(0, 6);
         igText("%s", cat_name);
