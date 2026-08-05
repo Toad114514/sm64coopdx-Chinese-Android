@@ -115,6 +115,10 @@
 //  2017-08-25: Inputs: MousePos set to -FLT_MAX,-FLT_MAX when mouse is unavailable/missing (instead of -1,-1).
 //  2016-10-15: Misc: Added a void* user_data parameter to Clipboard function handlers.
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "../imgui.h"
 #ifndef IMGUI_DISABLE
 #include "imgui_impl_sdl2.h"
@@ -156,11 +160,6 @@
 #include <SDL_vulkan.h>
 #else
 static const Uint32 SDL_WINDOW_VULKAN = 0x10000000;
-#endif
-
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 // SDL Data

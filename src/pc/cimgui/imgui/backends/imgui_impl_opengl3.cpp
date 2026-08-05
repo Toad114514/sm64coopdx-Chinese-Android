@@ -125,6 +125,10 @@
 //  ES 3.0    300       "#version 300 es"   = WebGL 2.0
 //----------------------------------------
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -234,10 +238,6 @@
 #define GL_CALL(_CALL)      do { _CALL; GLenum gl_err = glGetError(); if (gl_err != 0) fprintf(stderr, "GL error 0x%x returned from '%s'.\n", gl_err, #_CALL); } while (0)  // Call with error check
 #else
 #define GL_CALL(_CALL)      _CALL   // Call without error check
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 // OpenGL Data
