@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "gfx_window_manager_api.h"
 #include "gfx_screen_config.h"
@@ -111,6 +112,28 @@ static void gfx_sdl_set_fullscreen(void) {
 
 ///////////////////// Derect ImGUI Render
 
+void Derect_InitFont(void) {
+    ImGuiIO* io = igGetIO();
+
+    // 1. 获取简体中文常用字符集（关键！没有这个中文会显示为方块）
+    const ImWchar* glyph_ranges = ImFontAtlas_GetGlyphRangesChineseSimplifiedCommon(io->Fonts);
+
+    // 2. 加载 TTF 字体文件
+    ImFont* custom_font = ImFontAtlas_AddFontFromFileTTF(
+        io->Fonts,
+        "res/yahei.ttf",    // 1) TTF 字体路径
+        26.0f,                     // 2) 字号像素大小 (手机端建议 24.0f ~ 28.0f)
+        NULL,                      // 3) ImFontConfig* 配置指针 (无特殊要求传 NULL)
+        glyph_ranges               // 4) 中文字符集范围
+    );
+
+    // 检查字体是否加载成功
+    if (custom_font == NULL) {
+        // 加载失败时自动退回默认字体
+        ImFontAtlas_AddFontDefault(io->Fonts, NULL);
+    }
+}
+
 void derect_initImgui(SDL_Window* window, SDL_GLContext gl_context) {
     if (gInitedImgui) return;
 
@@ -119,6 +142,14 @@ void derect_initImgui(SDL_Window* window, SDL_GLContext gl_context) {
     
     ImGuiIO* io = igGetIO();
     io->ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+    // 在游戏底层的 ImGui 初始化入口处（在 ImGui_ImplOpenGL3_Init 之前）：
+    
+    // 在这里配置默认字号：
+    // ImFontConfig config;
+    // memset(&config, 0, sizeof(ImFontConfig));
+    // config.SizePixels = 24.0f; // 修改这里为 24px 或 28px
+    // ImFontAtlas_AddFontDefault(io->Fonts, &config);
+    Derect_InitFont();
 
     // 2. 初始化 Vape V4 样式与触屏适配
     derect_initStyle();
