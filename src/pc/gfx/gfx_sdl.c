@@ -46,6 +46,7 @@
 #include "../derect/ui.h"
 #include "../derect/style.h"
 #include "../derect/hud.h"
+#include "../derect/module.h"
 
 #include "pc/controller/controller_keyboard.h"
 #ifdef TOUCH_CONTROLS
@@ -257,6 +258,8 @@ static void gfx_sdl_init(const char *window_title) {
     if (configWindow.fullscreen) {
         SDL_ShowCursor(SDL_DISABLE);
     }
+    
+    Module_InitRegistry();
     
     // init inject imgui
     derect_initImgui(wnd, ctx);
