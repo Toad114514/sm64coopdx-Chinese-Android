@@ -2,6 +2,22 @@
 #include "../cimgui/cimgui.h"
 #include "ui.h"
 
+// col32
+#ifndef IM_COL32
+#define IM_COL32_R_SHIFT 0
+#define IM_COL32_G_SHIFT 8
+#define IM_COL32_B_SHIFT 16
+#define IM_COL32_A_SHIFT 24
+#define IM_COL32(R,G,B,A) (((ImU32)(A)<<IM_COL32_A_SHIFT) | ((ImU32)(B)<<IM_COL32_B_SHIFT) | ((ImU32)(G)<<IM_COL32_G_SHIFT) | ((ImU32)(R)<<IM_COL32_R_SHIFT))
+#endif
+
+// More col32
+#ifndef IM_COL32_WHITE
+#define IM_COL32_WHITE IM_COL32(255,255,255,255)
+#define IM_COL32_BLACK IM_COL32(0,0,0,255)
+#define IM_COL32_BLACK_TRANS IM_COL32(0,0,0,0)
+#endif
+
 // 辅助宏：构建 C99 ImVec 结构体
 #define VEC2(x, y) ((ImVec2){(float)(x), (float)(y)})
 #define VEC4(r, g, b, a) ((ImVec4){(float)(r), (float)(g), (float)(b), (float)(a)})
@@ -69,12 +85,12 @@ void derect_initStyle(void) {
 // =========================================================================
 bool VapeUI_ModuleToggle(const char* label, bool* v, const char* desc) {
     ImVec2 avail;
-    igGetContentRegionAvail(&avail);
+    igGetContentRegionAvail();
     float width = avail.x;
     float height = 48.0f;
 
-    ImVec2 p;
-    igGetCursorScreenPos(&p);
+    // ImVec2 p;
+    igGetCursorScreenPos();
 
     // 隐形按钮响应触屏和点击
     bool pressed = igInvisibleButton(label, VEC2(width, height), 0);
@@ -97,8 +113,8 @@ bool VapeUI_ModuleToggle(const char* label, bool* v, const char* desc) {
     ImDrawList_AddRect(draw_list, p_min, p_max, borderColor, 6.0f, 0, 1.2f);
 
     // 2. 文本标签与描述
-    ImVec2 label_size;
-    igCalcTextSize(&label_size, label, NULL, false, -1.0f);
+    // ImVec2 label_size;
+    igCalcTextSize(label, NULL, false, -1.0f);
 
     ImVec2 text_pos = VEC2(p_min.x + 14.0f, p_min.y + (desc ? 8.0f : (height - label_size.y) * 0.5f));
     ImU32 textColor = is_active ? IM_COL32(255, 255, 255, 255) : IM_COL32(180, 180, 190, 255);
@@ -173,7 +189,7 @@ void derect_panel_render(bool* open) {
             igTextDisabled("MODULES & CONFIGS");
 
             ImVec2 avail;
-            igGetContentRegionAvail(&avail);
+            igGetContentRegionAvail();
             igSameLine(avail.x - 20, -1);
             if (igButton("X", VEC2(24, 24))) {
                 *open = false;
