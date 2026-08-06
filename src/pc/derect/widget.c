@@ -29,9 +29,11 @@ bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, 
         igPushStyleColor_Vec4(ImGuiCol_Header, (ImVec4){1.0f, 1.0f, 1.0f, 1.0f});
         igPushStyleColor_Vec4(ImGuiCol_HeaderHovered, (ImVec4){0.14f, 0.14f, 0.18f, 0.80f});
     }
+    
+    igPushStyleVar_Vec2(ImGuiStyleVar_ItemSpacing, (ImVec2){0.0f, 6.0f});
 
     // 绘制可点击区域
-    bool clicked = igSelectable_Bool(label, *active, ImGuiSelectableFlags_None, item_size);
+    bool clicked = igSelectable_Bool(label, *active, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
     if (clicked) {
         *active = !(*active);
     }
