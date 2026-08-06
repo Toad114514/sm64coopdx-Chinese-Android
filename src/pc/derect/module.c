@@ -49,6 +49,7 @@ void Module_InitRegistry(void) {
     Module_Register("Keystrokes",      CAT_RENDER, false, "LAlt+K",   green, false);
     Module_Register("Background",      CAT_RENDER, true,  NULL,       cyan,  true);
     Module_Register("GUIBlur",         CAT_RENDER, true,  NULL,       cyan,  true);
+    Module_Register("这是中文合成效果",   CAT_RENDER, false, NULL,       cyan,  true);
 
     // ==================== 2. Web 分类 ====================
     Module_Register("AntiRickroll",    CAT_WEB,    true,  NULL,       green, false);
