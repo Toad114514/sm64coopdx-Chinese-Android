@@ -111,6 +111,21 @@ static void gfx_sdl_set_fullscreen(void) {
 }
 
 ///////////////////// Derect ImGUI Render
+void InitLogging(void) {
+    FILE* log_file = freopen("game.log", "w", stdout);
+    if (!log_file) {
+        // 如果是在 Android 等系统，建议使用绝对可写路径，例如:
+        freopen("/sdcard/com.toad1145.derectcoopdxcn/game.log", "w", stdout);
+    }
+
+    // 2. 将 stderr (错误输出) 也重定向到日志文件
+    freopen("/sdcard/com.toad1145.derectcoopdxcn/game_err.log", "w", stderr);
+
+    // 3. 关键步骤：关闭缓冲区（或设为行缓冲）
+    // 默认文件输出是全缓冲的，若程序崩溃可能导致未写入日志；禁用缓冲可确保 printf 立即写入文件
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
+}
 
 void Derect_InitFont(void) {
     ImGuiIO* io = igGetIO();
@@ -169,6 +184,7 @@ void Derect_InitFont(void) {
 }
 
 void derect_initImgui(SDL_Window* window, SDL_GLContext gl_context) {
+    InitLogging();
     if (gInitedImgui) return;
 
     // 1. 创建 cimgui 上下文
