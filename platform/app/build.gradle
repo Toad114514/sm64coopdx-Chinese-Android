@@ -32,6 +32,11 @@ android {
             }
         }
     }
+    
+    androidResources {
+        noCompress 'ttf', 'otf'
+    }
+    
     buildTypes {
         release {
             minifyEnabled false
