@@ -146,7 +146,7 @@ void Derect_InitFont(void) {
     printf("[Derect] Loading %s \n", font_path);
     ImFont* custom_font = ImFontAtlas_AddFontFromFileTTF(
         io->Fonts,
-        font_path
+        font_path,
         26.0f,
         NULL,
         glyph_ranges // unicode range
