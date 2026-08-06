@@ -20,12 +20,13 @@ bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, 
     ImVec4 active_color = is_cyan 
         ? (ImVec4){0.00f, 0.65f, 0.60f, 1.00f}   // 青色 (Teal)
         : (ImVec4){0.10f, 0.70f, 0.20f, 1.00f};  // 绿色 (Green)
+    
 
     if (*active) {
         igPushStyleColor_Vec4(ImGuiCol_Header, active_color);
         igPushStyleColor_Vec4(ImGuiCol_HeaderHovered, (ImVec4){active_color.x * 1.1f, active_color.y * 1.1f, active_color.z * 1.1f, 1.0f});
     } else {
-        igPushStyleColor_Vec4(ImGuiCol_Header, (ImVec4){0.07f, 0.07f, 0.09f, 0.60f});
+        igPushStyleColor_Vec4(ImGuiCol_Header, (ImVec4){1.0f, 1.0f, 1.0f, 1.0f});
         igPushStyleColor_Vec4(ImGuiCol_HeaderHovered, (ImVec4){0.14f, 0.14f, 0.18f, 0.80f});
     }
 
@@ -60,10 +61,12 @@ void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
 
     igSetNextWindowPos(pos, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
     // igSetNextWindowSize((ImVec2){200, 400}, ImGuiCond_FirstUseEver);
-    igSetNextWindowSize((ImVec2){260.0f, 0.0f}, ImGuiCond_FirstUseEver); // for Phone
+    igSetNextWindowSizeConstraints(
+        (ImVec2){220.0f, -1.0f},
+        (ImVec2){220.0f, -1.0f},
+        NULL, NULL
+    );
     const char* cat_name = Module_GetCategoryName(target_cat);
-    
-    // igBegin(cat_name, NULL, ImGuiWindowFlags_NoTitleBar);
     
     // flags
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize;
