@@ -134,9 +134,7 @@ void Derect_InitFont(void) {
         ImFontAtlas_AddFontDefault(io->Fonts, NULL);
         return;
     }
-
-    // 分配内存并读取字体数据
-    // 注意：用 malloc 分配，ImGui 加载后会自行托管并释放（不需要手动 free）
+    
     void* font_buffer = malloc(font_size);
     fread(font_buffer, 1, font_size, f);
     fclose(f);
