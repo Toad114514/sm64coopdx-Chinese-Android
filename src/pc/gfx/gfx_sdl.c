@@ -128,7 +128,7 @@ void Derect_InitFont(void) {
     // 2. 加载 TTF 字体文件
     ImFont* custom_font = ImFontAtlas_AddFontFromFileTTF(
         io->Fonts,
-        "res/yahei.ttf",
+        "/storage/emulated/0/com.toad1145.derectcoopdxcn/lang/yahei.ttf",
         26.0f,          
         NULL,
         glyph_ranges // unicode range
