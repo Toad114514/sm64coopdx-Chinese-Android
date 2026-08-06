@@ -48,4 +48,6 @@ void derect_initStyle(void) {
     colors[ImGuiCol_Border]               = (ImVec4){0.12f, 0.12f, 0.15f, 0.50f};
     colors[ImGuiCol_Text]                 = (ImVec4){0.92f, 0.92f, 0.95f, 1.00f};
     colors[ImGuiCol_TextDisabled]         = (ImVec4){0.45f, 0.45f, 0.50f, 1.00f};
+    
+    printf("[Derect] Style Inited");
 }

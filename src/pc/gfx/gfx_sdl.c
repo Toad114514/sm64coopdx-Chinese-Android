@@ -130,29 +130,7 @@ void InitLogging(void) {
 void Derect_InitFont(void) {
     ImGuiIO* io = igGetIO();
     
-    const char* font_path = "res/yahei.ttf";
-    
-    FILE* f = fopen(font_path, "rb");
-    if (!f) {
-        printf("[Derect UI] Error: Font file not found at: %s\n", font_path);
-        ImFontAtlas_AddFontDefault(io->Fonts, NULL);
-        return;
-    }
-
-    // 获取文件大小
-    fseek(f, 0, SEEK_END);
-    long font_size = ftell(f);
-    fseek(f, 0, SEEK_SET);
-
-    if (font_size <= 0) {
-        fclose(f);
-        ImFontAtlas_AddFontDefault(io->Fonts, NULL);
-        return;
-    }
-    
-    void* font_buffer = malloc(font_size);
-    fread(font_buffer, 1, font_size, f);
-    fclose(f);
+    const char* font_path = "/sdcard/com.toad1145.derectcoopdxcn/lang/yahei.ttf";
 
     // glyph Unicode...::
     static const ImWchar glyph_ranges[] = {
@@ -164,22 +142,22 @@ void Derect_InitFont(void) {
         0,  // EOF
     };
     
-    // 2. 加载 TTF 字体文件
-    ImFont* custom_font = ImFontAtlas_AddFontFromMemoryTTF(
+    // load font
+    printf("[Derect] Loading %s \n", font_path);
+    ImFont* custom_font = ImFontAtlas_AddFontFromFileTTF(
         io->Fonts,
-        font_buffer,
-        (int)font_size,
-        26.0f,          
+        font_path
+        26.0f,
         NULL,
         glyph_ranges // unicode range
     );
 
     // check loaded
     if (!custom_font) {
-        printf("[Derect UI] MemoryTTF baking failed!\n");
+        printf("[Derect] TTF load failed!\n");
         ImFontAtlas_AddFontDefault(io->Fonts, NULL);
     } else {
-        printf("[Derect UI] Successfully baked TTF from memory buffer!\n");
+        printf("[Derect] Successfully loaded TTF Font\n");
     }
 }
 

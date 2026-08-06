@@ -30,6 +30,8 @@ void Module_Register(const char* name, ModuleCategory category, bool default_ena
         .is_cyan = is_cyan
     };
     g_module_count++;
+    
+    printf("[Derect] Resigned Module %s", name);
 }
 
 // 统一在此处注册所有游戏/应用模块
