@@ -49,7 +49,8 @@ bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, 
         igSameLine(window_w - 18.0f, 0.0f);
         igTextDisabled(":");
     }
-
+    
+    igPopStyleVar(1);
     igPopStyleColor(2);
     return clicked;
 }
