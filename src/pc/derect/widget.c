@@ -9,20 +9,16 @@
 
 // 渲染单个模块开关组件
 // label: 模块名, active: 开启状态, shortcut: 快捷键文本(可为NULL), is_cyan: 是否使用青色高亮(如GUIBlur)
-bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, bool is_cyan) {
-    if (!label || !active) return false;  // callback
+bool VapeUI_ModuleToggle(Module* mod) {
+    if (!mod) return false;  // callback
     
     ImVec2 avail;
     igGetContentRegionAvail();
     ImVec2 item_size = (ImVec2){avail.x, 24.0f};
-
-    // 设置激活时的背景色（鲜绿色 或 青色）
-    ImVec4 active_color = is_cyan 
-        ? (ImVec4){0.00f, 0.65f, 0.60f, 1.00f}   // 青色 (Teal)
-        : (ImVec4){0.10f, 0.70f, 0.20f, 1.00f};  // 绿色 (Green)
     
+    ImVec4 active_color = (ImVec4){0.00f, 0.65f, 0.60f, 1.00f}
 
-    if (*active) {
+    if (*mod->enabled) {
         igPushStyleColor_Vec4(ImGuiCol_Header, active_color);
         igPushStyleColor_Vec4(ImGuiCol_HeaderHovered, (ImVec4){active_color.x * 1.1f, active_color.y * 1.1f, active_color.z * 1.1f, 1.0f});
     } else {
@@ -33,22 +29,21 @@ bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, 
     igPushStyleVar_Vec2(ImGuiStyleVar_ItemSpacing, (ImVec2){0.0f, 6.0f});
 
     // 绘制可点击区域
-    bool clicked = igSelectable_Bool(label, *active, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
+    bool clicked = igSelectable_Bool(mod->name, *mod->enabled, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
     if (clicked) {
-        *active = !(*active);
+        *mod->enabled = !(*mod->enabled);
+        
+        if (mod->enabled) {
+            if (mod->on_enable) mod->on_enable();
+        } else {
+            if (mod->on_disable) mod->on_disable();
+        }
     }
 
     // 3. 靠右绘制快捷键与冒号（使用安全窗口相对坐标）
     float window_w = igGetWindowWidth();
-    if (shortcut && shortcut[0] != '\0') {
-        igSameLine(window_w - 80.0f, 0.0f);
-        igTextDisabled("%s", shortcut);
-        igSameLine(window_w - 18.0f, 0.0f);
-        igTextDisabled(":");
-    } else {
-        igSameLine(window_w - 18.0f, 0.0f);
-        igTextDisabled(":");
-    }
+    igSameLine(window_w - 18.0f, 0.0f);
+    igTextDisabled(":");
     
     igPopStyleVar(1);
     igPopStyleColor(2);
@@ -93,12 +88,7 @@ void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
         // 遍历当前分类下的模块
         for (int i = 0; i < count; i++) {
             if (modules[i].category == target_cat && modules[i].name != NULL) {
-                VapeUI_ModuleToggle(
-                    modules[i].name,
-                    &modules[i].enabled,
-                    modules[i].shortcut,
-                    modules[i].is_cyan
-                );
+                VapeUI_ModuleToggle(&modules[i]);
             }
         }
     }

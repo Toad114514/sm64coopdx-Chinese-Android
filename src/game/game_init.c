@@ -28,6 +28,8 @@
 #include "hud.h"
 #include "pc/controller/controller_mouse.h"
 
+#include "../ui/derect/module.h"
+
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
 // know of a good way to split them
 
@@ -593,6 +595,8 @@ void thread5_game_loop(UNUSED void *arg) {
 
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
+    
+    Module_Update(); //ui_update_loop
 
     gGlobalTimer++;
 }

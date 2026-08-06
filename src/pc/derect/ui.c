@@ -27,7 +27,7 @@
 // 3. 主界面渲染逻辑 (纯 C)
 // =========================================================================
 // 顶栏菜单项结构
-static const char* top_tabs[] = {"Modules", "Config", "GUI", "Sound", "Search", "Profiles", "About"};
+static const char* top_tabs[] = {"Modules", "Config", "HUD", "Search", "Profiles", "About"};
 static int active_tab = 0;
 
 // 模拟模块状态
@@ -86,27 +86,12 @@ void derect_panel_render(bool* p_open) {
     igBegin("RenderPanel", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
     // 自定义窗口 Header
-    igTextDisabled("^"); igSameLine(0, 5);
-    igText("Render");
-    igSameLine(igGetWindowWidth() - 20, 0);
-    igTextDisabled("^");
-    igSeparator();
-    igDummy((ImVec2){0, 2});
-    
-
-    igEnd();
-
-    // ================= 3. 右侧 HUD / Arraylist 悬浮列表 =================
-    // igSetNextWindowPos((ImVec2){io->DisplaySize.x - 10, 80}, ImGuiCond_Always, (ImVec2){1.0f, 0.0f});
-    // igBegin("HUD_Arraylist", NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs);
-
-    // if (mod_arraylist) {
-        // igTextColored((ImVec4){0.10f, 0.85f, 0.30f, 1.0f}, "AudioVisualizer");
-        // igTextColored((ImVec4){0.00f, 0.75f, 0.70f, 1.0f}, "Background");
-        // igTextColored((ImVec4){0.00f, 0.75f, 0.70f, 1.0f}, "GUIBlur");
-    // }
-
-    // igEnd();
+    // igTextDisabled("^"); igSameLine(0, 5);
+    // igText("Render");
+    // igSameLine(igGetWindowWidth() - 20, 0);
+    // igTextDisabled("^");
+    // igSeparator();
+    // igDummy((ImVec2){0, 2});
     
     float start_x = 50.0f;
     float start_y = 70.0f;
@@ -116,4 +101,6 @@ void derect_panel_render(bool* p_open) {
         ImVec2 panel_pos = (ImVec2){start_x + cat * panel_width, start_y};
         VapeUI_RenderCategoryPanel((ModuleCategory)cat, panel_pos);
     }
+    
+    igEnd();
 }

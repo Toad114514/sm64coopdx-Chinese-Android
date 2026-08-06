@@ -1,5 +1,5 @@
 #include "../cimgui/cimgui.h"
 #include "module.h"
 
-bool VapeUI_ModuleToggle(const char* label, bool* active, const char* shortcut, bool is_cyan);
+bool VapeUI_ModuleToggle(Module* mod);
 void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos);

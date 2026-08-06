@@ -7,7 +7,7 @@ static Module g_modules[MAX_MODULES];
 static int g_module_count = 0;
 
 static const char* g_category_names[] = {
-    "File", "Render", "Control", "Web", "Misc", "Drivers"
+    "File", "Render", "Control", "Web", "Misc", "Demo"
 };
 
 const char* Module_GetCategoryName(ModuleCategory cat) {
@@ -18,7 +18,7 @@ const char* Module_GetCategoryName(ModuleCategory cat) {
 }
 
 // 注册新模块的公共方法
-void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, bool is_cyan) {
+void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop) {
     if (g_module_count >= MAX_MODULES) return;
 
     g_modules[g_module_count] = (Module){
@@ -27,11 +27,27 @@ void Module_Register(const char* name, ModuleCategory category, bool default_ena
         .enabled = default_enabled,
         .shortcut = shortcut,
         .color = color,
-        .is_cyan = is_cyan
+        .on_enable = on_enable,
+        .on_disable = on_disable,
+        .on_loop = on_loop,
     };
     g_module_count++;
     
-    printf("[Derect] Resigned Module %s", name);
+    printf("[Derect] Resigned Module %s \n", name);
+}
+
+
+// Module text
+static void printf_test_on_enable(){
+    printf("[Test] test enable")
+}
+
+static void printf_test_on_disable(){
+    printf("[Test] Bye")
+}
+
+static void printf_test_good_work(){
+    printf("[Test] HolyMoly")
 }
 
 // 统一在此处注册所有游戏/应用模块
@@ -43,28 +59,42 @@ void Module_InitRegistry(void) {
     ImVec4 cyan  = (ImVec4){0.00f, 0.75f, 0.70f, 1.0f};
 
     // ==================== 1. Render 分类 ====================
-    Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, false);
-    Module_Register("AudioVisualizer", CAT_RENDER, true,  NULL,       green, false);
-    Module_Register("BlackCapture",    CAT_RENDER, false, "LCtrl+NO", green, false);
-    Module_Register("Keystrokes",      CAT_RENDER, false, "LAlt+K",   green, false);
-    Module_Register("Background",      CAT_RENDER, true,  NULL,       cyan,  true);
-    Module_Register("GUIBlur",         CAT_RENDER, true,  NULL,       cyan,  true);
-    Module_Register("这是中文合成效果",   CAT_RENDER, false, NULL,       cyan,  true);
+    Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("AudioVisualizer", CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("BlackCapture",    CAT_RENDER, false, "LCtrl+NO", green, NULL, NULL, NULL);
+    Module_Register("Keystrokes",      CAT_RENDER, false, "LAlt+K",   green, NULL, NULL, NULL);
+    Module_Register("Background",      CAT_RENDER, true,  NULL,       cyan,  NULL, NULL, NULL);
+    Module_Register("GUIBlur",         CAT_RENDER, true,  NULL,       cyan,  NULL, NULL, NULL);
+    Module_Register("这是中文合成效果",   CAT_RENDER, false, NULL,       cyan,  NULL, NULL, NULL);
 
     // ==================== 2. Web 分类 ====================
-    Module_Register("AntiRickroll",    CAT_WEB,    true,  NULL,       green, false);
-    Module_Register("LiveStream",      CAT_WEB,    true,  NULL,       green, false);
-    Module_Register("QuakeWarning",    CAT_WEB,    true,  NULL,       green, false);
-    Module_Register("BiliFans",        CAT_WEB,    true,  NULL,       green, false);
+    Module_Register("AntiRickroll",    CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("LiveStream",      CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("QuakeWarning",    CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("BiliFans",        CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
 
     // ==================== 3. Misc 分类 ====================
-    Module_Register("AutoSpeak",       CAT_MISC,   true,  NULL,       green, false);
-    Module_Register("MemeTrigger",     CAT_MISC,   true,  NULL,       green, false);
-    Module_Register("Volume",          CAT_MISC,   true,  "RAlt+Del", green, false);
+    Module_Register("AutoSpeak",       CAT_MISC,   true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("MemeTrigger",     CAT_MISC,   true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("Volume",          CAT_MISC,   true,  "RAlt+Del", green, NULL, NULL, NULL);
+    
+    // Demo Sections
+    Module_Register("Notification",    CAT_DEMO,   false, NULL,       green, NULL, NULL, NULL);
+    Module_Register("printf",          CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
 }
 
 // 获取已注册模块列表指针
 Module* Module_GetAll(int* out_count) {
     if (out_count) *out_count = g_module_count;
     return g_modules;
+}
+
+// will call on game/game_init.c
+void Module_Update(void) {
+    int count = sizeof(g_modules) / sizeof(g_modules[0]);
+    for (int i = 0; i < count; i++) {
+        if (g_modules[i].enabled && g_modules[i].on_loop) {
+            g_modules[i].on_loop();
+        }
+    }
 }

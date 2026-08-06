@@ -14,9 +14,11 @@ typedef enum {
     CAT_CONTROL,
     CAT_WEB,
     CAT_MISC,
-    CAT_DRIVERS,
+    CAT_DEMO,
     CAT_COUNT
 } ModuleCategory;
+
+typedef void (*ModuleCallBack)(void);
 
 // 单个模块数据结构
 typedef struct {
@@ -25,13 +27,21 @@ typedef struct {
     bool enabled;            // 开启状态
     const char* shortcut;    // 快捷键提示 (无则为 NULL)
     ImVec4 color;            // HUD 显色
-    bool is_cyan;            // 菜单激活时是否使用青色高亮
+    
+    ModuleCallBack on_enable;
+    ModuleCallBack on_disable;
+    ModuleCallBack on_loop;
 } Module;
 
 // API 声明
 void Module_InitRegistry(void);
-void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, bool is_cyan);
+void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack, on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop);
+
 Module* Module_GetAll(int* out_count);
+
 const char* Module_GetCategoryName(ModuleCategory cat);
+
+// callback
+void Module_Update(void);
 
 #endif
