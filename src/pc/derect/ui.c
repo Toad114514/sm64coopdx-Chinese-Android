@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "style.h"
 #include "widget.h"
+#include "module.h"
 
 // col32
 #ifndef IM_COL32

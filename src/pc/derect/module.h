@@ -36,13 +36,14 @@ typedef struct {
 
 // API 声明
 void Module_InitRegistry(void);
-Module Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop);
+void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop);
+void Module_HookRender(const char* name, ModuleCallBack on_render);
 
 Module* Module_GetAll(int* out_count);
-
 const char* Module_GetCategoryName(ModuleCategory cat);
 
 // callback
 void Module_Update(void);
+void Module_Render(void);
 
 #endif

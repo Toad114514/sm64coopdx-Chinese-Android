@@ -18,7 +18,7 @@ const char* Module_GetCategoryName(ModuleCategory cat) {
 }
 
 // 注册新模块的公共方法
-Module Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop) {
+void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop) {
     if (g_module_count >= MAX_MODULES) return;
 
     g_modules[g_module_count] = (Module){
@@ -35,6 +35,16 @@ Module Module_Register(const char* name, ModuleCategory category, bool default_e
     g_module_count++;
     
     printf("[Derect] Resigned Module %s \n", name);
+}
+
+void Module_HookRender(const char* name, ModuleCallBack on_render) {
+    int count = sizeof(g_modules) / sizeof(g_modules[0]);
+    for (int i = 0; i < count; i++) {
+        if (name == g_modules[i].name) {
+            g_modules[i]->on_render = on_render;
+            printf("[Derect] Resigned Module %s on_render hook", name);
+        }
+    }
 }
 
 
@@ -97,8 +107,8 @@ void Module_InitRegistry(void) {
     Module_Register("Notification",    CAT_DEMO,   false, NULL,       green, NULL, NULL, NULL);
     Module_Register("Function Printf", CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
 
-    static Module imguiDemo = Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, demo_loop);
-    imguiDemo->on_render = demo_loop;
+    Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, demo_loop);
+    Module_HookRender("ImGUI Demo",    demo_loop);
 }
     
 
