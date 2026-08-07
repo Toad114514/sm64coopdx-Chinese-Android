@@ -41,7 +41,7 @@ void Module_HookRender(const char* name, ModuleCallBack on_render) {
     int count = sizeof(g_modules) / sizeof(g_modules[0]);
     for (int i = 0; i < count; i++) {
         if (name == g_modules[i].name) {
-            g_modules[i]->on_render = on_render;
+            g_modules[i].on_render = on_render;
             printf("[Derect] Resigned Module %s on_render hook", name);
         }
     }
