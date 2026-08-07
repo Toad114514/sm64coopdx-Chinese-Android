@@ -50,12 +50,18 @@ static void printf_test_good_work(){
     printf("[Test] HolyMoly");
 }
 
-static void demo_show(){
-    igShowDemoWindow(true);
+static bool demo_close_btn = true;
+
+static void demo_loop(){
+    igShowDemoWindow(&demo_close_btn);
 }
 
 static void demo_close(){
-    igShowDemoWindow(false);
+    demo_close_btn = false;
+}
+
+static void demo_show() {
+    demo_close_btn = true;
 }
 
 // 统一在此处注册所有游戏/应用模块
@@ -88,7 +94,7 @@ void Module_InitRegistry(void) {
     
     // Demo Sections
     Module_Register("Notification",    CAT_DEMO,   false, NULL,       green, NULL, NULL, NULL);
-    Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, NULL);
+    Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, demo_loop);
     Module_Register("Function Printf",          CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
 }
 
