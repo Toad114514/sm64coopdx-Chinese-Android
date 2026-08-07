@@ -28,7 +28,7 @@
 #include "hud.h"
 #include "pc/controller/controller_mouse.h"
 
-#include "../pc/ui/derect/module.h"
+#include "../pc/derect/module.h"
 
 // FIXME: I'm not sure all of these variables belong in this file, but I don't
 // know of a good way to split them
