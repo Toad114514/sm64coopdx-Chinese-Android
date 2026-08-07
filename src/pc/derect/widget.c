@@ -16,7 +16,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
     igGetContentRegionAvail();
     ImVec2 item_size = (ImVec2){avail.x, 24.0f};
     
-    ImVec4 active_color = (ImVec4){0.00f, 0.65f, 0.60f, 1.00f}
+    ImVec4 active_color = (ImVec4){0.00f, 0.65f, 0.60f, 1.00f};
 
     if (*mod->enabled) {
         igPushStyleColor_Vec4(ImGuiCol_Header, active_color);
