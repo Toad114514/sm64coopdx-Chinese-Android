@@ -1,6 +1,7 @@
 #include "game/mario.h"
 #include "game/level_update.h"
 #include "types.h"
+#include "sm64.h"
 #include "../module.h"
 
 ImVec4 green = (ImVec4){0.10f, 0.85f, 0.30f, 1.0f};
