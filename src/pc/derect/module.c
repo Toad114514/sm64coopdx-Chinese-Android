@@ -18,7 +18,7 @@ const char* Module_GetCategoryName(ModuleCategory cat) {
 }
 
 // 注册新模块的公共方法
-void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop) {
+Module Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop) {
     if (g_module_count >= MAX_MODULES) return;
 
     g_modules[g_module_count] = (Module){
@@ -30,6 +30,7 @@ void Module_Register(const char* name, ModuleCategory category, bool default_ena
         .on_enable = on_enable,
         .on_disable = on_disable,
         .on_loop = on_loop,
+        .on_render = NULL,
     };
     g_module_count++;
     
@@ -94,9 +95,12 @@ void Module_InitRegistry(void) {
     
     // Demo Sections
     Module_Register("Notification",    CAT_DEMO,   false, NULL,       green, NULL, NULL, NULL);
-    Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, demo_loop);
-    Module_Register("Function Printf",          CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
+    Module_Register("Function Printf", CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
+
+    static Module imguiDemo = Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, demo_loop);
+    imguiDemo->on_render = demo_loop;
 }
+    
 
 // 获取已注册模块列表指针
 Module* Module_GetAll(int* out_count) {
@@ -110,6 +114,16 @@ void Module_Update(void) {
     for (int i = 0; i < count; i++) {
         if (g_modules[i].enabled && g_modules[i].on_loop) {
             g_modules[i].on_loop();
+        }
+    }
+}
+
+// will call on derect/ui Render
+void Module_Render(void) {
+    int count = sizeof(g_modules) / sizeof(g_modules[0]);
+    for (int i = 0; i < count; i++) {
+        if (g_modules[i].enabled && g_modules[i].on_render) {
+            g_modules[i].on_render();
         }
     }
 }
