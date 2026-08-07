@@ -34,7 +34,7 @@ void Module_Register(const char* name, ModuleCategory category, bool default_ena
     };
     g_module_count++;
     
-    printf("[Derect] Resigned Module %s \n", name);
+    printf("[Derect] Register Module %s \n", name);
 }
 
 void Module_HookRender(const char* name, ModuleCallBack on_render) {
@@ -42,7 +42,7 @@ void Module_HookRender(const char* name, ModuleCallBack on_render) {
     for (int i = 0; i < count; i++) {
         if (name == g_modules[i].name) {
             g_modules[i].on_render = on_render;
-            printf("[Derect] Resigned Module %s on_render hook", name);
+            printf("[Derect] Register Module %s on_render hook\n", name);
         }
     }
 }
@@ -77,6 +77,10 @@ static void demo_show() {
 
 /// extern Init
 extern void module_mario_state(void);
+extern void module_esp(void);
+
+// colors
+extern ImVec4 mod_green = (ImVec4){0.10f, 0.85f, 0.30f, 1.0f};
 
 // 统一在此处注册所有游戏/应用模块
 void Module_InitRegistry(void) {
@@ -87,6 +91,7 @@ void Module_InitRegistry(void) {
     ImVec4 cyan  = (ImVec4){0.00f, 0.75f, 0.70f, 1.0f};
     
     module_mario_state();
+    module_esp();
 
     // ==================== 1. Render 分类 ====================
     Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);

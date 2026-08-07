@@ -22,6 +22,8 @@ static void god_mode_disable(void) {
     }
 }
 
+// Mario Cap Status
+
 void module_mario_state(void){
     Module_Register("God Mode", CAT_MARIO, false, NULL, green, NULL, god_mode_disable, god_mode_loop);
 }
