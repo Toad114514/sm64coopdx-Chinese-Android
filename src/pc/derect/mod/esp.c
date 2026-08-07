@@ -114,7 +114,7 @@ void Mario_ESP_Render(void) {
     
     for (int i = 0; i < MAX_PLAYERS; i++) {
         struct MarioState* m = &gMarioStates[i];
-        struct NetworkPlayer* np = gNetworkPlayers[i];
+        struct NetworkPlayer* np = &gNetworkPlayers[i];
         
         if (!m || !m->marioObj || !np->connected ) continue;
 
