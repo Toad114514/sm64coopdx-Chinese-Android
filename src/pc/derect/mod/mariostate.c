@@ -1,4 +1,5 @@
 #include "game/mario.h"
+#include "game/level_update.h"
 #include "types.h"
 #include "../module.h"
 
