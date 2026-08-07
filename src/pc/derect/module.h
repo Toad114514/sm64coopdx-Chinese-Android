@@ -35,7 +35,7 @@ typedef struct {
 
 // API 声明
 void Module_InitRegistry(void);
-void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack, on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop);
+void Module_Register(const char* name, ModuleCategory category, bool default_enabled, const char* shortcut, ImVec4 color, ModuleCallBack on_enable, ModuleCallBack on_disable, ModuleCallBack on_loop);
 
 Module* Module_GetAll(int* out_count);
 
