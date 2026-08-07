@@ -75,6 +75,10 @@ static void demo_show() {
     demo_close_btn = true;
 }
 
+
+/// extern Init
+extern void module_mario_state(void);
+
 // 统一在此处注册所有游戏/应用模块
 void Module_InitRegistry(void) {
     g_module_count = 0;
@@ -82,6 +86,8 @@ void Module_InitRegistry(void) {
     // 预设常用颜色
     ImVec4 green = (ImVec4){0.10f, 0.85f, 0.30f, 1.0f};
     ImVec4 cyan  = (ImVec4){0.00f, 0.75f, 0.70f, 1.0f};
+    
+    module_mario_state();
 
     // ==================== 1. Render 分类 ====================
     Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);
@@ -106,7 +112,7 @@ void Module_InitRegistry(void) {
     // Demo Sections
     Module_Register("Notification",    CAT_DEMO,   false, NULL,       green, NULL, NULL, NULL);
     Module_Register("Function Printf", CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
-
+    
     Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, demo_loop);
     Module_HookRender("ImGUI Demo",    demo_loop);
 }

@@ -3,6 +3,8 @@
 #include "types.h"
 #include "../module.h"
 
+#include "mariostate.h"
+
 ImVec4 green = (ImVec4){0.10f, 0.85f, 0.30f, 1.0f};
 
 // Mario God Mode
@@ -22,7 +24,6 @@ static void god_mode_disable(void) {
     }
 }
 
-__attribute__((constructor))
-static void mario_modules(void){
+static void module_mario_state(void){
     Module_Register("God Mode", CAT_MARIO, false, NULL, green, NULL, god_mode_disable, god_mode_loop);
 }
