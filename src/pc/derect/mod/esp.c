@@ -80,8 +80,8 @@ bool WorldToScreen(const float worldPos[3], ESPScrPos* screenPos) {
     }
 
     // 7. 相机空间 -> NDC
-    float fov = gLakituState.fov;
-    if (fov <= 0.0f) fov = 45.0f; // 默认 45 度视角
+    float fov = 45.0f; // 默认45，目前无办法获取 Lakitu Fov
+    // if (fov <= 0.0f) fov = 45.0f; // 默认 45 度视角
     // focalLength = 1/tan(fov/2)
     float fl = 1.0f / tanf(DEG2RAD(fov * 0.5f));
     // 屏幕比例
@@ -105,7 +105,7 @@ bool WorldToScreen(const float worldPos[3], ESPScrPos* screenPos) {
 
 // Mario_ESP 透视
 void Mario_ESP_Render(void) {
-    ImDrawList* drawList = igGetForegroundDrawList();
+    ImDrawList* drawList = igGetForegroundDrawList_ViewportPtr(NULL);
     ImGuiIO* io = igGetIO();
     float screenWidth = io->DisplaySize.x;
     float screenHeight = io->DisplaySize.y;
