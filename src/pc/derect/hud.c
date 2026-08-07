@@ -34,7 +34,7 @@ void Derect_RenderHUD(void) {
                                | ImGuiWindowFlags_NoSavedSettings 
                                | ImGuiWindowFlags_NoFocusOnAppearing;
 
-    igBegin("##Vape_ArrayList_HUD", NULL, hud_flags);
+    igBegin("##Rerect_ArrayList_HUD", NULL, hud_flags);
 
     // 3. 遍历并渲染所有开启的模块
     int visible_index = 0;

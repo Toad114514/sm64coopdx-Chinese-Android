@@ -43,8 +43,6 @@ void derect_panel_render(bool* p_open) {
     if (!*p_open) return;
 
     ImGuiIO* io = igGetIO();
-    
-    Module_Render();
 
     // ================= 1. 顶部导航栏 =================
     igSetNextWindowPos((ImVec2){io->DisplaySize.x * 0.5f, 20}, ImGuiCond_Always, (ImVec2){0.5f, 0.0f});

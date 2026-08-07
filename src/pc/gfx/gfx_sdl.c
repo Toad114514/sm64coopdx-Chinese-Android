@@ -222,7 +222,8 @@ void gfx_sdl_render_imgui(void) {
     }
     igEnd();
     
-    Derect_RenderHUD();
+    Derect_RenderHUD();  // Hud
+    Module_Render();     // Moduless
 
     // 3. 渲染 Vape V4 主界面
     if (gDerectMenu) {
