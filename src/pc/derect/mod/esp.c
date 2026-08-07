@@ -9,6 +9,7 @@
 #include "game/camera.h"
 #include "game/level_update.h"
 #include "game/mario.h"
+#include "pc/network_player.h"
 #include "../module.h"
 
 #define DEG2RAD(angle) ((angle) * 3.14159265358979323846f / 180.0f)
@@ -29,13 +30,13 @@ bool WorldToScreen(const float worldPos[3], ESPScrPos* screenPos) {
     float screenHeight = io->DisplaySize.y;
 
     // 1. 获取 Lakitu Pos
-    float camX = gLakituState.pos[0];
-    float camY = gLakituState.pos[1];
-    float camZ = gLakituState.pos[2];
+    float camX = gLakituState.curPos[0];
+    float camY = gLakituState.curPos[1];
+    float camZ = gLakituState.curPos[2];
 
-    float focusX = gLakituState.focus[0];
-    float focusY = gLakituState.focus[1];
-    float focusZ = gLakituState.focus[2];
+    float focusX = gLakituState.curFocus[0];
+    float focusY = gLakituState.curFocus[1];
+    float focusZ = gLakituState.curFocus[2];
 
     // 2. Forward Vector 前向量
     //       Pfocus - Pcam
@@ -113,8 +114,9 @@ void Mario_ESP_Render(void) {
     
     for (int i = 0; i < MAX_PLAYERS; i++) {
         struct MarioState* m = &gMarioStates[i];
+        struct NetworkPlayer* np = gNetworkPlayers[i];
         
-        if (!m || !m->marioObj) continue;
+        if (!m || !m->marioObj || !np->connected ) continue;
 
         // 脚底和头顶
         float bottomWorld[3] = { m->pos[0], m->pos[1], m->pos[2] };
@@ -132,12 +134,21 @@ void Mario_ESP_Render(void) {
             float y1 = topScreen.y;
             float x2 = topScreen.x + boxWidth * 0.5f;
             float y2 = bottomScreen.y;
+            
+            // if NaN then fuck you off
+            if (isnan(x1) || isnan(y1) || isnan(x2) || isnan(y2) ||
+                isinf(x1) || isinf(y1) || isinf(x2) || isinf(y2)) {
+               return;
+            }
 
             // gMarioStates[0] 本人为 0
-            ImU32 color = (i == 0) ? IM_COL32(255, 255, 0, 255) : IM_COL32(0, 216, 255, 255);
+            ImU32 color = (i == 0) ? IM_COL32(255, 255, 0, 255) : IM_COL32(255, 0, 135, 255);
+            
+            ImVec2 pm = { x1, y1 };
+            ImVec2 px = { x2, y2 };
             
             // 框
-            ImDrawList_AddRect(drawList, (ImVec2){x1, y1}, (ImVec2){x2, y2}, color, 0.0f, 0, 1.5f);
+            ImDrawList_AddRect(drawList, pm, px, color, 0.0f, 0, 1.5f);
 
             // 看我跟踪。
             ImDrawList_AddLine(
@@ -150,7 +161,7 @@ void Mario_ESP_Render(void) {
 
             // 看我开户。
             char infoText[64];
-            snprintf(infoText, sizeof(infoText), "P%d | HP %d", i + 1, m->health);
+            snprintf(infoText, sizeof(infoText), "%d | HP %d", np->name, m->health);
             ImDrawList_AddText_Vec2(
                 drawList,
                 (ImVec2){x1, y1 - 16.0f},
