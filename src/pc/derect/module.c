@@ -79,9 +79,6 @@ static void demo_show() {
 extern void module_mario_state(void);
 extern void module_esp(void);
 
-// colors
-extern ImVec4 mod_green = (ImVec4){0.10f, 0.85f, 0.30f, 1.0f};
-
 // 统一在此处注册所有游戏/应用模块
 void Module_InitRegistry(void) {
     g_module_count = 0;

@@ -7,6 +7,10 @@
 
 #include "../cimgui/cimgui.h"
 
+// 模块颜色选择
+#define MOD_COLOR_GREEN ((ImVec4){0.10f, 0.85f, 0.30f, 1.0f})
+#define MOD_COLOR_CYAN  ((ImVec4){0.00f, 0.75f, 0.70f, 1.0f})
+
 // 模块分类定义
 typedef enum {
     CAT_FILE = 0,

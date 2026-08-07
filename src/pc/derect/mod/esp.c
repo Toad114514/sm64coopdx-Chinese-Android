@@ -1,16 +1,20 @@
 #include <math.h>
 #include <stdbool.h>
+
+#ifndef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
+#endif
+#include "../../cimgui/cimgui.h"
+
 #include "game/camera.h"
 #include "game/level_update.h"
 #include "game/mario.h"
-#include "../../cimgui/cimgui.h"
 
 #define DEG2RAD(angle) ((angle) * 3.14159265358979323846f / 180.0f)
 
 typedef struct {
     float x, y;
-} Vec2f;
-
+} ESPScrPos;
 
 ////////
 // 3d -> 2d Pos
@@ -18,7 +22,7 @@ typedef struct {
 // $$X_{ndc} = \frac{X_{cam} \cdot \cot(\frac{FOV}{2})}{Z_{cam} \cdot Aspect}, \quad Y_{ndc} = \frac{Y_{cam} \cdot \cot(\frac{FOV}{2})}{Z_{cam}}$$
 
 
-bool WorldToScreen(const float worldPos[3], Vec2f* screenPos) {
+bool WorldToScreen(const float worldPos[3], ESPScrPos* screenPos) {
     ImGuiIO* io = igGetIO();
     float screenWidth = io->DisplaySize.x;
     float screenHeight = io->DisplaySize.y;
@@ -115,7 +119,7 @@ void Mario_ESP_Render(void) {
         float bottomWorld[3] = { m->pos[0], m->pos[1], m->pos[2] };
         float topWorld[3]    = { m->pos[0], m->pos[1] + 160.0f, m->pos[2] }; // 马尿身高160
 
-        Vec2f bottomScreen, topScreen;
+        ESPScrPos bottomScreen, topScreen;
 
         // 坐标转换
         if (WorldToScreen(bottomWorld, &bottomScreen) && WorldToScreen(topWorld, &topScreen)) {
@@ -130,7 +134,8 @@ void Mario_ESP_Render(void) {
 
             // gMarioStates[0] 本人为 0
             ImU32 color = (i == 0) ? IM_COL32(255, 255, 0, 255) : IM_COL32(0, 216, 255, 255);
-
+            
+            // 框
             ImDrawList_AddRect(drawList, (ImVec2){x1, y1}, (ImVec2){x2, y2}, color, 0.0f, 0, 1.5f);
 
             // 看我跟踪。
@@ -158,6 +163,6 @@ void Mario_ESP_Render(void) {
 
 // Module Register
 void module_esp(void){
-    Module_Register("Player ESP", CAT_RENDER, false, NULL, mod_green, NULL, NULL, NULL);
+    Module_Register("Player ESP", CAT_RENDER, false, NULL, MOD_COLOR_GREEN, NULL, NULL, NULL);
     Module_HookRender("Player ESP", Mario_ESP_Render);
 }
