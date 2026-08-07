@@ -595,8 +595,6 @@ void thread5_game_loop(UNUSED void *arg) {
 
     play_music(SEQ_PLAYER_SFX, SEQUENCE_ARGS(0, SEQ_SOUND_PLAYER), 0);
     set_sound_mode(save_file_get_sound_mode());
-    
-    Module_Update(); //ui_update_loop
 
     gGlobalTimer++;
 }
@@ -610,6 +608,8 @@ void game_loop_one_iteration(void) {
         //block_until_rumble_pak_free();
         osContStartReadData(&gSIEventMesgQueue);
     }
+    
+    Module_Update(); //ui_update_loop
 
     thread6_rumble_loop(NULL);
     audio_game_loop_tick();
