@@ -148,15 +148,15 @@ void Mario_ESP_Render(void) {
             ImVec2 px = { x2, y2 };
             
             // 框
-            ImDrawList_AddRect(drawList, pm, px, color, 0.0f, 0, 1.5f);
+            ImDrawList_AddRect(drawList, pm, px, color, 0.0f, 1.5f, 0);
 
             // 看我跟踪。
             ImDrawList_AddLine(
                 drawList,
                 (ImVec2){screenWidth * 0.5f, screenHeight},
                 (ImVec2){bottomScreen.x, bottomScreen.y},
-                IM_COL32(255, 255, 255, 120),
-                1.0f
+                color,
+                1.5f
             );
 
             // 看我开户。

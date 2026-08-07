@@ -24,6 +24,23 @@ static void god_mode_disable(void) {
 
 // Mario Cap Status
 
+static void inf_metal_cap_loop(void) {
+    struct MarioState* m = &gMarioStates[0];
+    if (m) {
+        m->flags |= MARIO_METAL_CAP | MARIO_CAP_ON_HEAD;
+        m->capTimer = 678;
+    }
+}
+
+static void inf_metal_cap_disable(void) {
+    struct MarioState* m = &gMarioStates[0];
+    if (m) {
+        m->flags &= ~MARIO_METAL_CAP;
+        m->capTimer = 0;
+    }
+}
+
 void module_mario_state(void){
-    Module_Register("God Mode", CAT_MARIO, false, NULL, green, NULL, god_mode_disable, god_mode_loop);
+    Module_Register("God Mode",    CAT_MARIO, false, NULL, green, NULL, god_mode_disable,      god_mode_loop);
+    Module_Register("Inf MCap",   CAT_MARIO, false, NULL, green, NULL, inf_metal_cap_disable, inf_metal_cap_loop);
 }
