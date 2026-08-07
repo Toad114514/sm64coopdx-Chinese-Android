@@ -71,7 +71,7 @@ SRC_DIRS := src src/engine src/game src/audio src/menu src/buffers actors levels
             src/pc/network src/pc/network/packets src/pc/network/socket src/pc/network/coopnet \
             src/pc/utils src/pc/utils/miniz src/pc/djui src/pc/lua src/pc/lua/utils src/pc/mumble \
             include/android_execinfo src/pc/ui \
-            src/pc/cimgui src/pc/cimgui/imgui src/pc/cimgui/imgui/backends src/pc/derect
+            src/pc/cimgui src/pc/cimgui/imgui src/pc/cimgui/imgui/backends src/pc/derect src/pc/derect/mod
 
 SRC_DIRS_ABS := $(addprefix $(LOCAL_PATH)/,$(SRC_DIRS))
 

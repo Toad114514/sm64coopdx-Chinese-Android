@@ -7,7 +7,7 @@ static Module g_modules[MAX_MODULES];
 static int g_module_count = 0;
 
 static const char* g_category_names[] = {
-    "File", "Render", "Control", "Web", "Misc", "Demo"
+    "File", "Mario", "Render", "Control", "Coopnet/Web", "Misc", "Demo"
 };
 
 const char* Module_GetCategoryName(ModuleCategory cat) {

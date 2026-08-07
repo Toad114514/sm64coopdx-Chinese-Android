@@ -514,7 +514,8 @@ SRC_DIRS += src/pc/mumble
 SRC_DIRS += src/pc/cimgui \
             src/pc/cimgui/imgui \
             src/pc/cimgui/imgui/backends \
-            src/pc/derect
+            src/pc/derect \
+            src/pc/derect/mod
 
 ULTRA_SRC_DIRS := lib/src lib/src/math lib/asm lib/data
 ULTRA_BIN_DIRS := lib/bin
