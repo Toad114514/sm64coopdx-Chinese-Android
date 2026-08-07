@@ -50,6 +50,14 @@ static void printf_test_good_work(){
     printf("[Test] HolyMoly");
 }
 
+static void demo_show(){
+    igShowDemoWindow(true);
+}
+
+static void demo_close(){
+    igShowDemoWindow(false);
+}
+
 // 统一在此处注册所有游戏/应用模块
 void Module_InitRegistry(void) {
     g_module_count = 0;
@@ -80,7 +88,8 @@ void Module_InitRegistry(void) {
     
     // Demo Sections
     Module_Register("Notification",    CAT_DEMO,   false, NULL,       green, NULL, NULL, NULL);
-    Module_Register("printf",          CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
+    Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, NULL);
+    Module_Register("Function Printf",          CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
 }
 
 // 获取已注册模块列表指针
