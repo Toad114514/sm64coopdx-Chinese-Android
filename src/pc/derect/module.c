@@ -39,15 +39,15 @@ void Module_Register(const char* name, ModuleCategory category, bool default_ena
 
 // Module text
 static void printf_test_on_enable(){
-    printf("[Test] test enable")
+    printf("[Test] test enable");
 }
 
 static void printf_test_on_disable(){
-    printf("[Test] Bye")
+    printf("[Test] Bye");
 }
 
 static void printf_test_good_work(){
-    printf("[Test] HolyMoly")
+    printf("[Test] HolyMoly");
 }
 
 // 统一在此处注册所有游戏/应用模块
