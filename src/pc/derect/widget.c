@@ -12,7 +12,7 @@
 bool VapeUI_ModuleToggle(Module* mod) {
     if (!mod) return false;  // callback
     
-    ImVec2 avail;
+    //ImVec2 avail;
     igGetContentRegionAvail();
     // ImVec2 item_size = (ImVec2){avail.x, 24.0f};
     

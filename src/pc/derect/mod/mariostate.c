@@ -3,8 +3,6 @@
 #include "types.h"
 #include "../module.h"
 
-#include "mariostate.h"
-
 ImVec4 green = (ImVec4){0.10f, 0.85f, 0.30f, 1.0f};
 
 // Mario God Mode
