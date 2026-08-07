@@ -22,4 +22,7 @@ static void god_mode_disable(void) {
     }
 }
 
-Module_Register("God Mode", CAT_MARIO, false, NULL, green, NULL, god_mode_disable, god_mode_loop);
+__attribute__((constructor))
+static void mario_modules(void){
+    Module_Register("God Mode", CAT_MARIO, false, NULL, green, NULL, god_mode_disable, god_mode_loop);
+}
