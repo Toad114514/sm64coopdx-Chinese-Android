@@ -75,7 +75,6 @@ static void demo_show() {
     demo_close_btn = true;
 }
 
-
 /// extern Init
 extern void module_mario_state(void);
 
