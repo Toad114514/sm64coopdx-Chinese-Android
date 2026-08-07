@@ -14,7 +14,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
     
     ImVec2 avail;
     igGetContentRegionAvail();
-    ImVec2 item_size = (ImVec2){avail.x, 24.0f};
+    // ImVec2 item_size = (ImVec2){avail.x, 24.0f};
     
     ImVec4 active_color = (ImVec4){0.00f, 0.65f, 0.60f, 1.00f};
 
@@ -29,9 +29,9 @@ bool VapeUI_ModuleToggle(Module* mod) {
     igPushStyleVar_Vec2(ImGuiStyleVar_ItemSpacing, (ImVec2){0.0f, 6.0f});
 
     // 绘制可点击区域
-    bool clicked = igSelectable_Bool(mod->name, *mod->enabled, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
+    bool clicked = igSelectable_Bool(mod->name, mod->enabled, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
     if (clicked) {
-        *mod->enabled = !(*mod->enabled);
+        mod->enabled = !(mod->enabled);
         
         if (mod->enabled) {
             if (mod->on_enable) mod->on_enable();
