@@ -12,23 +12,8 @@
 // label: 模块名, active: 开启状态, shortcut: 快捷键文本(可为NULL), is_cyan: 是否使用青色高亮(如GUIBlur)
 bool VapeUI_ModuleToggle(Module* mod) {
     if (!mod) return false;  // callback
-    ImGuiIO* io = igGetIO();
     
     igPushID_Str(mod->name); // aloneID
-    static bool s_long_pressed = false;
-
-    // 按下重置标记
-    if (igIsItemClicked(ImGuiMouseButton_Left)) {
-        s_long_pressed = false;
-    }
-    
-    if (igIsItemActive()) {
-        if (io->MouseDownDuration[0] >= 0.4f && !s_long_pressed) {
-            mod->expanded = !mod->expanded;
-            s_long_pressed = true;
-        }
-    }
-    
     
     ////////// Active
     
@@ -50,34 +35,28 @@ bool VapeUI_ModuleToggle(Module* mod) {
     
     /////////nb Click
     bool clicked = igSelectable_Bool(mod->name, mod->enabled, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
-    // if (clicked) {
-    if (igIsItemDeactivated()) {
-        if (!s_long_pressed && igIsItemHovered(0)) {
-            mod->enabled = !(mod->enabled);
-            if (mod->enabled) {
-                if (mod->on_enable) mod->on_enable();
-            } else {
-                if (mod->on_disable) mod->on_disable();
-            }
-            
-            Config_Save("/storage/emulated/0/com.toad1145.derectcoopdxcn/config.ini");
+    if (clicked) {
+        mod->enabled = !(mod->enabled);
+        if (mod->enabled) {
+            if (mod->on_enable) mod->on_enable();
+        } else {
+            if (mod->on_disable) mod->on_disable();
         }
-        s_long_pressed = false;
+        
+        Config_Save("/storage/emulated/0/com.toad1145.derectcoopdxcn/config.ini");
     }
-    // }
     
     float window_w = igGetWindowWidth();
     igSameLine(window_w - 15.0f, 0.0f);
     
     // Popups
-    igSameLine(0.0f, 4.0f);
-    // ImGuiDir arrow_dir = mod->expanded ? ImGuiDir_Down : ImGuiDir_Right;
-    // if (igArrowButton("##expandBtn", arrow_dir)) {
-        // mod->expanded = !mod->expanded;
-    // }
-
-    // 支持右键直接切换展开状态
-    if (igIsItemClicked(ImGuiMouseButton_Right)) {
+    //igSameLine(0.0f, 4.0f);
+    ImGuiDir arrow_dir = mod->expanded ? ImGuiDir_Down : ImGuiDir_Right;
+    if (igArrowButton("##expandBtn", arrow_dir)) {
+        mod->expanded = !mod->expanded;
+    }
+    
+    if (igIsItemClicked(ImGuiMouseButton_Left)) {
         mod->expanded = !mod->expanded;
     }
 
