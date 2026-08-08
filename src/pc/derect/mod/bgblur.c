@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include <GL/glew.h>
+#include <GL/gl.h>
 #include <GL/glext.h>
 
 #ifndef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
@@ -74,8 +74,8 @@ void bgblur_render(void) {
     if (screen_w <= 0 || screen_h <= 0) return;
 
     // low.w/low.h
-    int low_w = (int)(screen_w / g_blur_scale);
-    int low_h = (int)(screen_h / g_blur_scale);
+    int low_w = (int)(screen_w / g_blur_radius);
+    int low_h = (int)(screen_h / g_blur_radius);
     if (low_w < 16) low_w = 16;
     if (low_h < 16) low_h = 16;
 
@@ -106,9 +106,11 @@ void bgblur_render(void) {
         ImVec2 uv0 = {0.0f, 1.0f};
         ImVec2 uv1 = {1.0f, 0.0f};
         
+        ImTextureRef_c tex_ref = (ImTextureRef_c){ (ImTextureID)(uintptr_t)s_blur_tex };
+        
         ImDrawList_AddImage(
             bgList,
-            (ImTextureID)(uintptr_t)s_blur_tex,
+            tex_ref,
             (ImVec2){0.0f, 0.0f},
             (ImVec2){(float)screen_w, (float)screen_h},
             uv0, uv1,
