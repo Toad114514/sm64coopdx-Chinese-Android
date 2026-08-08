@@ -14,6 +14,20 @@
 
 #define IM_COL32(R, G, B, A) (((ImU32)(A) << 24) | ((ImU32)(B) << 16) | ((ImU32)(G) << 8) | (ImU32)(R))
 
+// GL
+#ifndef GL_READ_FRAMEBUFFER
+#define GL_READ_FRAMEBUFFER 0x8CA8
+#endif
+#ifndef GL_DRAW_FRAMEBUFFER
+#define GL_DRAW_FRAMEBUFFER 0x8CA9
+#endif
+#ifndef GL_READ_FRAMEBUFFER_BINDING
+#define GL_READ_FRAMEBUFFER_BINDING 0x8CAA
+#endif
+#ifndef GL_DRAW_FRAMEBUFFER_BINDING
+#define GL_DRAW_FRAMEBUFFER_BINDING 0x8CA7
+#endif
+
 // GL Handle
 static GLuint s_blur_fbo = 0;
 static GLuint s_blur_tex = 0;
@@ -106,7 +120,7 @@ void bgblur_render(void) {
         ImVec2 uv0 = {0.0f, 1.0f};
         ImVec2 uv1 = {1.0f, 0.0f};
         
-        ImTextureRef_c tex_ref = (ImTextureRef_c){ (ImTextureID)(uintptr_t)s_blur_tex };
+        ImTextureRef_c tex_ref = (ImTextureRef_c){ NULL, (ImTextureID)(uintptr_t)s_blur_tex };
         
         ImDrawList_AddImage(
             bgList,
