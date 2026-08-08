@@ -88,6 +88,7 @@ static void demo_show() {
 /// extern Init
 extern void module_mario_state(void);
 extern void module_esp(void);
+extern void module_bgblur(void);
 
 // 统一在此处注册所有游戏/应用模块
 void Module_InitRegistry(void) {
@@ -99,6 +100,7 @@ void Module_InitRegistry(void) {
     
     module_mario_state();
     module_esp();
+    module_bgblur();
 
     // ==================== 1. Render 分类 ====================
     Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);
