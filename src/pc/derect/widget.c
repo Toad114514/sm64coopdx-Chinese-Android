@@ -47,16 +47,12 @@ bool VapeUI_ModuleToggle(Module* mod) {
     }
     
     float window_w = igGetWindowWidth();
-    igSameLine(window_w - 15.0f, 0.0f);
+    igSameLine(window_w - 12.0f, 0.0f);
     
     // Popups
     //igSameLine(0.0f, 4.0f);
     ImGuiDir arrow_dir = mod->expanded ? ImGuiDir_Down : ImGuiDir_Right;
     if (igArrowButton("##expandBtn", arrow_dir)) {
-        mod->expanded = !mod->expanded;
-    }
-    
-    if (igIsItemClicked(ImGuiMouseButton_Left)) {
         mod->expanded = !mod->expanded;
     }
 
@@ -96,8 +92,8 @@ void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
     igSetNextWindowPos(pos, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
     // igSetNextWindowSize((ImVec2){200, 400}, ImGuiCond_FirstUseEver);
     igSetNextWindowSizeConstraints(
-        (ImVec2){220.0f, -1.0f},
-        (ImVec2){220.0f, -1.0f},
+        (ImVec2){290.0f, -1.0f},
+        (ImVec2){290.0f, -1.0f},
         NULL, NULL
     );
     const char* cat_name = Module_GetCategoryName(target_cat);
