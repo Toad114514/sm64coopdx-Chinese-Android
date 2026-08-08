@@ -24,6 +24,8 @@ typedef struct {
 static ConfigEntry s_entries[MAX_CONFIG_ENTRIES];
 static int s_entry_count = 0;
 
+static g_module_count = sizeof(g_modules) / sizeof(g_modules[0]);
+
 // 去除字符串前后空格
 static char* trim_whitespace(char* str) {
     char* end;

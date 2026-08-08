@@ -3,7 +3,7 @@
 
 #define MAX_MODULES 128
 
-static Module g_modules[MAX_MODULES];
+extern Module g_modules[MAX_MODULES];
 static int g_module_count = 0;
 
 static const char* g_category_names[] = {
