@@ -46,34 +46,41 @@ bool VapeUI_ModuleToggle(Module* mod) {
         
         Config_Save("/storage/emulated/0/com.toad1145.derectcoopdxcn/config.ini");
     }
-
-    // 3. 靠右绘制快捷键与冒号（使用安全窗口相对坐标）
+    
     float window_w = igGetWindowWidth();
-    igSameLine(window_w - 18.0f, 0.0f);
+    igSameLine(window_w - 15.0f, 0.0f);
     
     // Popups
-    bool open_popup = igBeginPopupContextItem("##configPopups", ImGuiPopupFlags_MouseButtonRight);
-    
-    if (igArrowButton("##configbtn", ImGuiDir_Down)) {
-        igOpenPopup_Str("##configPopups", 0);
+    igSameLine(0.0f, 4.0f);
+    ImGuiDir arrow_dir = mod->expanded ? ImGuiDir_Down : ImGuiDir_Right;
+    if (igArrowButton("##expandBtn", arrow_dir)) {
+        mod->expanded = !mod->expanded;
     }
-    
-    if (open_popup || igBeginPopup("##configPopups", 0)) {
-        // igTextDisabled("[%s 配置]", mod->name);
-        igSeparator();
-        
-        if (mod->config) {
-            mod->config();
-        } else {
-            igText("这里只有棍母");
-        }
 
-        igEndPopup();
+    // 支持右键直接切换展开状态
+    if (igIsItemClicked(ImGuiMouseButton_Right)) {
+        mod->expanded = !mod->expanded;
     }
-    
-    igPopStyleVar(1);
-    igPopStyleColor(2);
-    
+
+    // 4. 【核心逻辑】如果处于展开状态且有配置项，直接在下方内嵌渲染
+    if (mod->expanded && mod->on_config) {
+        igSpacing();
+        
+        igIndent(12.0f);
+        igBeginGroup();
+        igPushStyleColor_Vec4(ImGuiCol_ChildBg, (ImVec4){0.1f, 0.1f, 0.1f, 0.5f});
+        
+        // 渲染模块自带的配置项（Slider/Combo/Checkbox 等）
+        mod->on_config();
+
+        igPopStyleColor(1);
+        igEndGroup();
+
+        igUnindent(12.0f);
+        igSpacing();
+        igSeparator();
+    }
+
     igPopID();
     return clicked;
 }

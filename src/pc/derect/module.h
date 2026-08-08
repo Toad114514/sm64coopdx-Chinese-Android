@@ -33,6 +33,7 @@ typedef struct {
     const char* name;        // 模块名称
     ModuleCategory category; // 所属分类
     bool enabled;            // 开启状态
+    bool expanded;           // 展开/关闭
     const char* shortcut;    // 快捷键提示 (无则为 NULL)
     ImVec4 color;            // HUD 显色
     
