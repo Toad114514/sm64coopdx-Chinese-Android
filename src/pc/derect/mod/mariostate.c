@@ -14,9 +14,9 @@ static bool god_invc = false;
 static int  god_healBack = 4;
 
 static const ConfigOption s_god_mode_option[] = {
-    BIND_BOOL ("lockhealth",     "Lock Player Health",     &god_lockHealth);
-    BIND_BOOL ("invinc",         "Invinc Player",          &god_invc);
-    BIND_INT  ("healcount",      "Health Counter",         &god_healBack,    0,   8,  "%d");
+    BIND_BOOL ("lockhealth",     "Lock Player Health",     &god_lockHealth),
+    BIND_BOOL ("invinc",         "Invinc Player",          &god_invc),
+    BIND_INT  ("healcount",      "Health Counter",         &god_healBack,    0,   8,  "%d")
 };
 #define GMOD_COUNT (sizeof(s_god_mode_option) / sizeof(s_god_mode_option[0]))
 
