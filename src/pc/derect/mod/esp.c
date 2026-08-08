@@ -161,7 +161,7 @@ void Mario_ESP_Render(void) {
 
             // 看我开户。
             char infoText[64];
-            snprintf(infoText, sizeof(infoText), "%d | HP %d", np->name, m->health);
+            snprintf(infoText, sizeof(infoText), "%s | HP %d", np->name, m->health);
             ImDrawList_AddText_Vec2(
                 drawList,
                 (ImVec2){x1, y1 - 16.0f},

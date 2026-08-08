@@ -108,7 +108,7 @@ static const ConfigOption s_anti_death_floor_config[] = {
 #define ADF_COUNT (sizeof(s_anti_death_floor_config) / sizeof(s_anti_death_floor_config[0]))
 
 static void adf_config(void) {
-    Config_RenderOptions(s_anti_death_floor_config, ADF_COUNT)
+    Config_RenderOptions(s_anti_death_floor_config, ADF_COUNT);
 }
 
 static void adf_loop(void) {
