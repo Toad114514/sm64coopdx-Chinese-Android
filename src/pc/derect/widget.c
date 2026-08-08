@@ -19,7 +19,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
     igPushID_Str(mod->name); // aloneID
     
     ImVec4 active_color = (ImVec4){0.00f, 0.65f, 0.60f, 1.00f};
-    if (mod->color) {
+    if (mod->color.w > 0.0f) {
         active_color = mod->color;
     }
 
@@ -52,6 +52,8 @@ bool VapeUI_ModuleToggle(Module* mod) {
     igSameLine(window_w - 18.0f, 0.0f);
     
     // Popups
+    bool open_popup = igBeginPopupContextItem("##configPopups", ImGuiPopupFlags_MouseButtonRight);
+    
     if (igArrowButton("##configbtn", ImGuiDir_Down)) {
         igOpenPopup_Str("##configPopups", 0);
     }

@@ -1,5 +1,6 @@
 #include "module.h"
 #include <stddef.h>
+#include <string.h>
 
 Module g_modules[MAX_MODULES];
 int g_module_count = 0;
@@ -109,13 +110,13 @@ void Module_InitRegistry(void) {
     Module_Register("这是中文合成效果",   CAT_RENDER, false, NULL,       cyan,  NULL, NULL, NULL);
 
     // ==================== 2. Web 分类 ====================
-    Module_Register("AntiRickroll",    CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("AntiRickroll",    CAT_WEB,    true,  NULL,       MOD_COLOR_RED, NULL, NULL, NULL);
     Module_Register("LiveStream",      CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
-    Module_Register("QuakeWarning",    CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("QuakeWarning",    CAT_WEB,    true,  NULL,       MOD_COLOR_PINK, NULL, NULL, NULL);
     Module_Register("BiliFans",        CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
 
     // ==================== 3. Misc 分类 ====================
-    Module_Register("AutoSpeak",       CAT_MISC,   true,  NULL,       green, NULL, NULL, NULL);
+    Module_Register("AutoSpeak",       CAT_MISC,   true,  NULL,       MOD_COLOR_BLUE, NULL, NULL, NULL);
     Module_Register("MemeTrigger",     CAT_MISC,   true,  NULL,       green, NULL, NULL, NULL);
     Module_Register("Volume",          CAT_MISC,   true,  "RAlt+Del", green, NULL, NULL, NULL);
     
