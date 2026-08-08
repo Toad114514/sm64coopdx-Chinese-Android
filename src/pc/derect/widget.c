@@ -63,7 +63,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
     }
 
     // 4. 【核心逻辑】如果处于展开状态且有配置项，直接在下方内嵌渲染
-    if (mod->expanded && mod->on_config) {
+    if (mod->expanded && mod->config) {
         igSpacing();
         
         igIndent(12.0f);
