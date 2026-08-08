@@ -80,11 +80,11 @@ void derect_panel_render(bool* p_open) {
     igEnd();
 
     // ================= 2. Render 分类窗口 =================
-    igSetNextWindowPos((ImVec2){200, 80}, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
-    igSetNextWindowSize((ImVec2){220, 450}, ImGuiCond_FirstUseEver);
+    // igSetNextWindowPos((ImVec2){200, 80}, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
+    // igSetNextWindowSize((ImVec2){220, 450}, ImGuiCond_FirstUseEver);
     
     // 隐藏系统默认标题栏，使用自定义简洁头部
-    igBegin("RenderPanel", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
+    //igBegin("RenderPanel", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
     // 自定义窗口 Header
     // igTextDisabled("^"); igSameLine(0, 5);
@@ -96,12 +96,12 @@ void derect_panel_render(bool* p_open) {
     
     float start_x = 50.0f;
     float start_y = 70.0f;
-    float panel_width = 220.0f; // 每个面板间隔宽度
+    float panel_width = 240.0f; // 每个面板间隔宽度
 
     for (int cat = 0; cat < CAT_COUNT; cat++) {
         ImVec2 panel_pos = (ImVec2){start_x + cat * panel_width, start_y};
         VapeUI_RenderCategoryPanel((ModuleCategory)cat, panel_pos);
     }
     
-    igEnd();
+    //igEnd();
 }

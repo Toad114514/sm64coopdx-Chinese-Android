@@ -31,6 +31,7 @@ void Module_Register(const char* name, ModuleCategory category, bool default_ena
         .on_disable = on_disable,
         .on_loop = on_loop,
         .on_render = NULL,
+        .config = NULL,
     };
     g_module_count++;
     
@@ -43,6 +44,16 @@ void Module_HookRender(const char* name, ModuleCallBack on_render) {
         if (name == g_modules[i].name) {
             g_modules[i].on_render = on_render;
             printf("[Derect] Register Module %s on_render hook\n", name);
+        }
+    }
+}
+
+void Module_HookConfig(const char* name, ModuleCallBack config) {
+    int count = sizeof(g_modules) / sizeof(g_modules[0]);
+    for (int i = 0; i < count; i++) {
+        if (name == g_modules[i].name) {
+            g_modules[i].config = config;
+            printf("[Derect] Register Module %s config hook\n", name);
         }
     }
 }
@@ -123,6 +134,19 @@ void Module_InitRegistry(void) {
 Module* Module_GetAll(int* out_count) {
     if (out_count) *out_count = g_module_count;
     return g_modules;
+}
+
+// mods
+Module* Module_Find(const char* name) {
+    if (!name) return NULL;
+    
+    for (int i = 0; i < g_module_count; i++) {
+        if (g_modules[i].name && strcmp(g_modules[i].name, name) == 0) {
+            return &g_modules[i];
+        }
+    }
+
+    return NULL;
 }
 
 // will call on game/game_init.c

@@ -6,6 +6,7 @@
 #include "../cimgui/cimgui.h"
 #include "widget.h"
 #include "module.h"
+#include "config.h"
 
 // 渲染单个模块开关组件
 // label: 模块名, active: 开启状态, shortcut: 快捷键文本(可为NULL), is_cyan: 是否使用青色高亮(如GUIBlur)
@@ -13,10 +14,14 @@ bool VapeUI_ModuleToggle(Module* mod) {
     if (!mod) return false;  // callback
     
     //ImVec2 avail;
-    igGetContentRegionAvail();
-    // ImVec2 item_size = (ImVec2){avail.x, 24.0f};
+    //igGetContentRegionAvail();
+    
+    igPushID_Str(mod->name); // aloneID
     
     ImVec4 active_color = (ImVec4){0.00f, 0.65f, 0.60f, 1.00f};
+    if (mod->color) {
+        active_color = mod->color;
+    }
 
     if (mod->enabled) {
         igPushStyleColor_Vec4(ImGuiCol_Header, active_color);
@@ -38,15 +43,36 @@ bool VapeUI_ModuleToggle(Module* mod) {
         } else {
             if (mod->on_disable) mod->on_disable();
         }
+        
+        Config_Save("/storage/emulated/0/com.toad1145.derectcoopdxcn/config.ini");
     }
 
     // 3. 靠右绘制快捷键与冒号（使用安全窗口相对坐标）
     float window_w = igGetWindowWidth();
     igSameLine(window_w - 18.0f, 0.0f);
-    igTextDisabled(":");
+    
+    // Popups
+    if (igArrowButton("##configbtn", ImGuiDir_Down)) {
+        igOpenPopup_Str("##configPopups", 0);
+    }
+    
+    if (open_popup || igBeginPopup("##configPopups", 0)) {
+        // igTextDisabled("[%s 配置]", mod->name);
+        igSeparator();
+        
+        if (mod->config) {
+            mod->config();
+        } else {
+            igText("这里只有棍母");
+        }
+
+        igEndPopup();
+    }
     
     igPopStyleVar(1);
     igPopStyleColor(2);
+    
+    igPopID();
     return clicked;
 }
 

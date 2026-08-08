@@ -48,6 +48,7 @@
 #include "../derect/style.h"
 #include "../derect/hud.h"
 #include "../derect/module.h"
+#include "../derect/config.h"
 
 #include "pc/controller/controller_keyboard.h"
 #ifdef TOUCH_CONTROLS
@@ -163,6 +164,8 @@ void Derect_InitFont(void) {
 
 void derect_initImgui(SDL_Window* window, SDL_GLContext gl_context) {
     InitLogging();
+    Config_Load("/storage/emulated/0/com.toad1145.derectcoopdxcn/config.ini");
+    
     if (gInitedImgui) return;
 
     // 1. 创建 cimgui 上下文
