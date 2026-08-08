@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include <GL/gl.h>
-#include <GL/glext.h>
+#include <GLES3/gl3.h>
+#include <GLES2/gl2ext.h>
 
 #ifndef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
