@@ -1,6 +1,9 @@
 #include <stdbool.h>
 #include <math.h>
 
+#include <GL/glew.h>
+#include <GL/glext.h>
+
 #ifndef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #define CIMGUI_DEFINE_ENUMS_AND_STRUCTS
 #endif
@@ -10,6 +13,11 @@
 #include "../config.h"
 
 #define IM_COL32(R, G, B, A) (((ImU32)(A) << 24) | ((ImU32)(B) << 16) | ((ImU32)(G) << 8) | (ImU32)(R))
+
+// GL Handle
+static GLuint s_blur_fbo = 0;
+static GLuint s_blur_tex = 0;
+static int s_fbo_w = 0, s_fbo_h = 0;
 
 // config
 static float g_blur_darkness = 0.55f;
@@ -25,36 +33,101 @@ void bgblur_config(void) {
     Config_RenderOptions(bgblur_options, BGBLUR_OPTION_COUNT);
 }
 
-void bgblur_render(void) {
-    ImDrawList* bgDrawList = igGetBackgroundDrawList(NULL);
-    ImGuiIO* io = igGetIO();
-    if (!bgDrawList || !io) return;
-    
-    ImVec2 screenSize = io->DisplaySize;
-    if (screenSize.x <= 0 || screenSize.y <= 0) return;
-    
-    int alpha = (int)(g_blur_darkness * 220.0f);
-    if (alpha > 255) alpha = 255;
-    if (alpha < 0)   alpha = 0;
-    
-    ImU32 overlayColor = IM_COL32(10, 12, 16, alpha);
-    ImDrawList_AddRectFilled(bgDrawList, (ImVec2){0, 0}, screenSize, overlayColor, 0.0f, 0);
-    
-    int passes = (int)g_blur_radius;
-    if (passes > 1) {
-        float step = g_blur_radius * 0.6f;
-        ImU32 blurColor = IM_COL32(255, 255, 255, (int)(12.0f / passes));
+static void UpdateBlurFBO(int low_w, int low_h) {
+    if (s_fbo_w == low_w && s_fbo_h == low_h && s_blur_fbo != 0) return;
 
-        for (int i = 1; i <= passes; i++) {
-            float offset = i * step;
-            ImDrawList_AddRectFilled(
-                bgDrawList,
-                (ImVec2){-offset, -offset},
-                (ImVec2){screenSize.x + offset, screenSize.y + offset},
-                blurColor,
-                0.0f, 0
-            );
-        }
+    s_fbo_w = low_w;
+    s_fbo_h = low_h;
+
+    // 清理旧资源
+    if (s_blur_fbo) glDeleteFramebuffers(1, &s_blur_fbo);
+    if (s_blur_tex) glDeleteTextures(1, &s_blur_tex);
+
+    // 1. 创建低分辨率纹理
+    glGenTextures(1, &s_blur_tex);
+    glBindTexture(GL_TEXTURE_2D, s_blur_tex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, low_w, low_h, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    
+    // 【关键】：开启 GL_LINEAR 线性过滤，放大时自动生成弥散模糊
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    // 2. 绑定到专用 FBO
+    glGenFramebuffers(1, &s_blur_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, s_blur_fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, s_blur_tex, 0);
+
+    // 还原默认帧缓冲区绑定
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+void bgblur_render(void) {
+    ImGuiIO* io = igGetIO();
+    if (!io) return;
+
+    int screen_w = (int)io->DisplaySize.x;
+    int screen_h = (int)io->DisplaySize.y;
+    if (screen_w <= 0 || screen_h <= 0) return;
+
+    // low.w/low.h
+    int low_w = (int)(screen_w / g_blur_scale);
+    int low_h = (int)(screen_h / g_blur_scale);
+    if (low_w < 16) low_w = 16;
+    if (low_h < 16) low_h = 16;
+
+    UpdateBlurFBO(low_w, low_h);
+
+    // FBO 保存
+    GLint old_read_fbo = 0, old_draw_fbo = 0;
+    glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &old_read_fbo);
+    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &old_draw_fbo);
+
+    // fuckoff
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_blur_fbo);
+
+    // GL_LINEAR 
+    glBlitFramebuffer(
+        0, 0, screen_w, screen_h,
+        0, 0, low_w, low_h,
+        GL_COLOR_BUFFER_BIT, GL_LINEAR
+    );
+    
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, old_read_fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, old_draw_fbo);
+    
+    ImDrawList* bgList = igGetBackgroundDrawList(NULL);
+    if (bgList && s_blur_tex != 0) {
+        // 倒灌
+        ImVec2 uv0 = {0.0f, 1.0f};
+        ImVec2 uv1 = {1.0f, 0.0f};
+        
+        ImDrawList_AddImage(
+            bgList,
+            (ImTextureID)(uintptr_t)s_blur_tex,
+            (ImVec2){0.0f, 0.0f},
+            (ImVec2){(float)screen_w, (float)screen_h},
+            uv0, uv1,
+            0xFFFFFFFF
+        );
+
+        // darkness overlay
+        int alpha = (int)(g_blur_darkness * 255.0f);
+        if (alpha > 255) alpha = 255;
+        if (alpha < 0)   alpha = 0;
+
+        ImU32 overlayColor = ((ImU32)alpha << 24) | 0x000A0A0E;
+        ImDrawList_AddRectFilled(
+            bgList,
+            (ImVec2){0.0f, 0.0f},
+            (ImVec2){(float)screen_w, (float)screen_h},
+            overlayColor,
+            0.0f, 0
+        );
     }
 }
 

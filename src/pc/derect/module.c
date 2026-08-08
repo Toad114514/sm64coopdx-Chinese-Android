@@ -165,7 +165,7 @@ void Module_Render(void) {
     int count = sizeof(g_modules) / sizeof(g_modules[0]);
     for (int i = 0; i < count; i++) {
         // blacklist
-        if (g_modules[i].name == "Background Blur") continue;
+        if (g_modules[i].name == "BackgroundBlur") continue;
         
         if (g_modules[i].enabled && g_modules[i].on_render) {
             g_modules[i].on_render();
