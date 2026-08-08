@@ -42,12 +42,14 @@ static GLuint s_fbo_pong = 0, s_tex_pong = 0;
 static int s_buf_w = 0, s_buf_h = 0;
 
 // Config
-static float g_blur_darkness = 0.55f;
-static float g_blur_radius   = 3.0f;  // 高斯采样半径
+static float g_blur_darkness  = 0.55f;
+static float g_blur_radius    = 4.0f;  // Shader 采样半径 (1.0 - 10.0)
+static float g_blur_downscale = 4.0f;  // 下采样倍率 (缩小画面消除采样缝隙)
 
 static const ConfigOption bgblur_options[] = {
-    BIND_FLOAT("darkness", "Darkness",    &g_blur_darkness, 0.0f, 1.0f, "%.2f"),
-    BIND_FLOAT("radius",   "Blur Radius", &g_blur_radius,   0.5f, 10.0f, "%.1f")
+    BIND_FLOAT("darkness",  "Darkness",    &g_blur_darkness,  0.0f, 1.0f,  "%.2f"),
+    BIND_FLOAT("radius",    "Blur Radius", &g_blur_radius,    0.5f, 10.0f, "%.1f"),
+    BIND_FLOAT("downscale", "Downscale",   &g_blur_downscale, 1.0f, 8.0f,  "%.1f")
 };
 #define BGBLUR_OPTION_COUNT (sizeof(bgblur_options) / sizeof(bgblur_options[0]))
 
@@ -56,13 +58,13 @@ static const char* g_vs_src =
     "#version 300 es\n"
     "out vec2 vTexCoord;\n"
     "void main() {\n"
-    "    // 无需 VAO/VBO，直接根据 VertexID 生成覆盖全屏的三角形\n"
     "    float x = -1.0 + float((gl_VertexID & 1) << 2);\n"
     "    float y = -1.0 + float((gl_VertexID & 2) << 1);\n"
     "    vTexCoord = vec2((x + 1.0) * 0.5, (y + 1.0) * 0.5);\n"
     "    gl_Position = vec4(x, y, 0.0, 1.0);\n"
     "}\n";
 
+// 双线性优化 5-Tap 高斯 Shader (利用硬件线性采样覆盖 9 个像素)
 static const char* g_fs_src =
     "#version 300 es\n"
     "precision mediump float;\n"
@@ -74,15 +76,18 @@ static const char* g_fs_src =
     "uniform float u_radius;\n"
     "\n"
     "void main() {\n"
-    "    // 9-Tap 核心高斯权重分布\n"
-    "    float weights[5] = float[](0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);\n"
-    "    vec4 result = texture(u_texture, vTexCoord) * weights[0];\n"
-    "    for (int i = 1; i < 5; i++) {\n"
-    "        vec2 offset = u_direction * (float(i) * u_radius);\n"
-    "        result += texture(u_texture, vTexCoord + offset) * weights[i];\n"
-    "        result += texture(u_texture, vTexCoord - offset) * weights[i];\n"
+    "    vec4 color = vec4(0.0);\n"
+    "    // 双线性偏移优化参数\n"
+    "    float offsets[3] = float[](0.0, 1.3846153846, 3.2307692308);\n"
+    "    float weights[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);\n"
+    "\n"
+    "    color += texture(u_texture, vTexCoord) * weights[0];\n"
+    "    for (int i = 1; i < 3; i++) {\n"
+    "        vec2 offset = u_direction * (offsets[i] * u_radius);\n"
+    "        color += texture(u_texture, vTexCoord + offset) * weights[i];\n"
+    "        color += texture(u_texture, vTexCoord - offset) * weights[i];\n"
     "    }\n"
-    "    FragColor = result;\n"
+    "    FragColor = color;\n"
     "}\n";
 
 static GLuint CompileShader(GLenum type, const char* src) {
@@ -125,6 +130,8 @@ static void CreateFBO(GLuint* fbo, GLuint* tex, int w, int h) {
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    
+    // 【关键】：开启线性过滤，放大/缩小过程产生自然弥散
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -135,15 +142,15 @@ static void CreateFBO(GLuint* fbo, GLuint* tex, int w, int h) {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *tex, 0);
 }
 
-static void UpdateFBOs(int w, int h) {
-    if (s_buf_w == w && s_buf_h == h && s_fbo_raw != 0) return;
+static void UpdateFBOs(int low_w, int low_h) {
+    if (s_buf_w == low_w && s_buf_h == low_h && s_fbo_raw != 0) return;
 
-    s_buf_w = w;
-    s_buf_h = h;
+    s_buf_w = low_w;
+    s_buf_h = low_h;
 
-    CreateFBO(&s_fbo_raw,  &s_tex_raw,  w, h);
-    CreateFBO(&s_fbo_ping, &s_tex_ping, w, h);
-    CreateFBO(&s_fbo_pong, &s_tex_pong, w, h);
+    CreateFBO(&s_fbo_raw,  &s_tex_raw,  low_w, low_h);
+    CreateFBO(&s_fbo_ping, &s_tex_ping, low_w, low_h);
+    CreateFBO(&s_fbo_pong, &s_tex_pong, low_w, low_h);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -164,7 +171,14 @@ void bgblur_render(void) {
     InitShader();
     if (!s_shader_program) return;
 
-    UpdateFBOs(screen_w, screen_h);
+    // 计算低分辨率 FBO 尺寸 (防止过小，至少保留 16x16)
+    float scale = (g_blur_downscale < 1.0f) ? 1.0f : g_blur_downscale;
+    int low_w = (int)(screen_w / scale);
+    int low_h = (int)(screen_h / scale);
+    if (low_w < 16) low_w = 16;
+    if (low_h < 16) low_h = 16;
+
+    UpdateFBOs(low_w, low_h);
 
     // 1. 备份 GL 渲染状态
     GLint old_program = 0, old_active_tex = 0, old_tex_binding = 0;
@@ -180,29 +194,29 @@ void bgblur_render(void) {
     GLboolean scissor_was_enabled = glIsEnabled(GL_SCISSOR_TEST);
     if (scissor_was_enabled) glDisable(GL_SCISSOR_TEST);
 
-    // 2. 拷贝当前屏幕 Framebuffer (0) -> s_fbo_raw
+    // 2. 将屏幕 (Screen) Blit 并缩小写入 low-res s_fbo_raw (自动触发第一层硬件模糊)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, s_fbo_raw);
-    glBlitFramebuffer(0, 0, screen_w, screen_h, 0, 0, screen_w, screen_h, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBlitFramebuffer(0, 0, screen_w, screen_h, 0, 0, low_w, low_h, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
-    // 准备 Shader 绘制
+    // 准备低分辨率 Shader 绘制
     glUseProgram(s_shader_program);
     glUniform1i(s_u_tex_loc, 0);
     glUniform1f(s_u_radius_loc, g_blur_radius);
-    glViewport(0, 0, screen_w, screen_h);
+    glViewport(0, 0, low_w, low_h);
 
     glActiveTexture(GL_TEXTURE0);
 
-    // 3. Pass 1: 水平方向高斯模糊 (s_tex_raw -> s_fbo_ping)
+    // 3. Pass 1: 低分辨率水平高斯模糊 (s_tex_raw -> s_fbo_ping)
     glBindFramebuffer(GL_FRAMEBUFFER, s_fbo_ping);
     glBindTexture(GL_TEXTURE_2D, s_tex_raw);
-    glUniform2f(s_u_dir_loc, 1.0f / (float)screen_w, 0.0f);
+    glUniform2f(s_u_dir_loc, 1.0f / (float)low_w, 0.0f);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
-    // 4. Pass 2: 垂直方向高斯模糊 (s_tex_ping -> s_fbo_pong)
+    // 4. Pass 2: 低分辨率垂直高斯模糊 (s_tex_ping -> s_fbo_pong)
     glBindFramebuffer(GL_FRAMEBUFFER, s_fbo_pong);
     glBindTexture(GL_TEXTURE_2D, s_tex_ping);
-    glUniform2f(s_u_dir_loc, 0.0f, 1.0f / (float)screen_h);
+    glUniform2f(s_u_dir_loc, 0.0f, 1.0f / (float)low_h);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     // 5. 还原 GL 状态
@@ -214,7 +228,7 @@ void bgblur_render(void) {
     glViewport(old_viewport[0], old_viewport[1], old_viewport[2], old_viewport[3]);
     if (scissor_was_enabled) glEnable(GL_SCISSOR_TEST);
 
-    // 6. 将最终高斯模糊纹理 (s_tex_pong) 提交给 ImGui 绘制
+    // 6. 将处理好的低分辨率纹理 (s_tex_pong) 放大拉伸绘制至 ImGui 全屏
     ImDrawList* bgList = igGetBackgroundDrawList(NULL);
     if (bgList && s_tex_pong != 0) {
         ImVec2 uv0 = {0.0f, 1.0f};

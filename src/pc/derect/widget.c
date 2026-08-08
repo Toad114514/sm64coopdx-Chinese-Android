@@ -49,7 +49,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
     }
     
     float window_w = igGetWindowWidth();
-    igSameLine(window_w - 28.0f, 0.0f);
+    igSameLine(window_w - 32.0f, 0.0f);
     
     // Popups
     //igSameLine(0.0f, 4.0f);
