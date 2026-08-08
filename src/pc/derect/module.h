@@ -14,10 +14,6 @@
 #define MOD_COLOR_CYAN  ((ImVec4){0.00f, 0.75f, 0.70f, 1.0f})
 #define MOD_COLOR_PINK  ((ImVec4){1.0f,  0.00f, 0.78f, 1.0f})
 
-#define MAX_MODULE = 128;
-extern Module g_modules[MAX_MODULES];
-extern int g_module_count;
-
 // 模块分类定义
 typedef enum {
     CAT_FILE = 0,
@@ -47,6 +43,10 @@ typedef struct {
     
     ModuleCallBack config;
 } Module;
+
+#define MAX_MODULES = 128;
+extern Module g_modules[MAX_MODULES];
+extern int g_module_count;
 
 // API 声明
 void Module_InitRegistry(void);
