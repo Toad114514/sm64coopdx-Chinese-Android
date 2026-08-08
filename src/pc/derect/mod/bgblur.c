@@ -59,8 +59,8 @@ void bgblur_render(void) {
 }
 
 void module_bgblur(void){
-    Module_Register("Background Blur", CAT_RENDER, false, NULL, MOD_COLOR_BLUE, NULL, NULL, NULL);
-    Module_HookConfig("Background Blur", bgblur_config);
-    Module_HookRender("Background Blur", bgblur_render);
-    Config_RegisterModuleOptions("Background Blur", bgblur_options, BGBLUR_OPTION_COUNT);
+    Module_Register("BackgroundBlur", CAT_RENDER, false, NULL, MOD_COLOR_BLUE, NULL, NULL, NULL);
+    Module_HookConfig("BackgroundBlur", bgblur_config);
+    Module_HookRender("BackgroundBlur", bgblur_render);
+    Config_RegisterModuleOptions("BackgroundBlur", bgblur_options, BGBLUR_OPTION_COUNT);
 }

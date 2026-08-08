@@ -47,12 +47,10 @@ void derect_panel_render(bool* p_open) {
     // ============ 其他模块的组件渲染 ===============
     
     // >> Background Blur
-    Module* bgblur = Module_Find("GUIBlur");
+    Module* bgblur = Module_Find("BackgroundBlur");
     
-    if (bgblur && bgblur->enabled) {
-        if (bgblur->on_render) {
-            bgblur->on_render();
-        }
+    if (bgblur && bgblur->enabled && bgblur->on_render) {
+        bgblur->on_render();
     }
 
     // ================= 顶部导航栏 =================

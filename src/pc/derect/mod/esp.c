@@ -175,6 +175,6 @@ void Mario_ESP_Render(void) {
 
 // Module Register
 void module_esp(void){
-    Module_Register("Player ESP", CAT_RENDER, false, NULL, MOD_COLOR_GREEN, NULL, NULL, NULL);
-    Module_HookRender("Player ESP", Mario_ESP_Render);
+    Module_Register("PlayerESP", CAT_RENDER, false, NULL, MOD_COLOR_GREEN, NULL, NULL, NULL);
+    Module_HookRender("PlayerESP", Mario_ESP_Render);
 }

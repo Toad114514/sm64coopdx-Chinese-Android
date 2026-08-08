@@ -90,11 +90,11 @@ static void inf_vanish_cap_disable(void) {
 }
 
 void module_mario_state(void){
-    Module_Register("God Mode",    CAT_MARIO, false, NULL, green, NULL, god_mode_disable,        god_mode_loop);
-    Module_HookConfig("God Mode", god_op);
-    Config_RegisterModuleOptions("God Mode", s_god_mode_option, GMOD_COUNT);
+    Module_Register("GodMode",    CAT_MARIO, false, NULL, green, NULL, god_mode_disable,        god_mode_loop);
+    Module_HookConfig("GodMode", god_op);
+    Config_RegisterModuleOptions("GodMode", s_god_mode_option, GMOD_COUNT);
     
-    Module_Register("Inf WCap",    CAT_MARIO, false, NULL, green, NULL, inf_wing_cap_disable,    inf_wing_cap_loop);
-    Module_Register("Inf MCap",    CAT_MARIO, false, NULL, green, NULL, inf_metal_cap_disable,   inf_metal_cap_loop);
-    Module_Register("Inf VCap",    CAT_MARIO, false, NULL, green, NULL, inf_vanish_cap_disable,  inf_vanish_cap_loop);
+    Module_Register("InfWCap",    CAT_MARIO, false, NULL, green, NULL, inf_wing_cap_disable,    inf_wing_cap_loop);
+    Module_Register("InfMCap",    CAT_MARIO, false, NULL, green, NULL, inf_metal_cap_disable,   inf_metal_cap_loop);
+    Module_Register("InfVCap",    CAT_MARIO, false, NULL, green, NULL, inf_vanish_cap_disable,  inf_vanish_cap_loop);
 }
