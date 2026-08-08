@@ -71,10 +71,10 @@ bool VapeUI_ModuleToggle(Module* mod) {
     
     // Popups
     igSameLine(0.0f, 4.0f);
-    ImGuiDir arrow_dir = mod->expanded ? ImGuiDir_Down : ImGuiDir_Right;
-    if (igArrowButton("##expandBtn", arrow_dir)) {
-        mod->expanded = !mod->expanded;
-    }
+    // ImGuiDir arrow_dir = mod->expanded ? ImGuiDir_Down : ImGuiDir_Right;
+    // if (igArrowButton("##expandBtn", arrow_dir)) {
+        // mod->expanded = !mod->expanded;
+    // }
 
     // 支持右键直接切换展开状态
     if (igIsItemClicked(ImGuiMouseButton_Right)) {
