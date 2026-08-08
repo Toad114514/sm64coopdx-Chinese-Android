@@ -37,7 +37,7 @@ static void god_mode_disable(void) {
 }
 
 static void god_op(void) {
-    Config_RenderOptions(s_god_mode_option, GMOD_COUNT)
+    Config_RenderOptions(s_god_mode_option, GMOD_COUNT);
 }
 
 // Mario Cap Status
