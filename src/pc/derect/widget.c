@@ -15,6 +15,9 @@ bool VapeUI_ModuleToggle(Module* mod) {
     
     igPushID_Str(mod->name); // aloneID
     
+    ImVec2 sizes = igGetContentRegionAvail();
+    float width = sizes.x;
+    
     ////////// Active
     
     ImVec4 active_color = (ImVec4){0.00f, 0.65f, 0.60f, 1.00f};
@@ -32,7 +35,6 @@ bool VapeUI_ModuleToggle(Module* mod) {
     
     igPushStyleVar_Vec2(ImGuiStyleVar_ItemSpacing, (ImVec2){0.0f, 6.0f});
     
-    
     /////////nb Click
     bool clicked = igSelectable_Bool(mod->name, mod->enabled, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
     if (clicked) {
@@ -47,7 +49,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
     }
     
     float window_w = igGetWindowWidth();
-    igSameLine(window_w - 12.0f, 0.0f);
+    igSameLine(window_w - 3.0f, 0.0f);
     
     // Popups
     //igSameLine(0.0f, 4.0f);
@@ -61,6 +63,8 @@ bool VapeUI_ModuleToggle(Module* mod) {
         igSpacing();
         
         igIndent(12.0f);
+        igPushItemWidth(width - 12.0f * 2.0f);
+        
         igBeginGroup();
         igPushStyleColor_Vec4(ImGuiCol_ChildBg, (ImVec4){0.1f, 0.1f, 0.1f, 0.5f});
         
@@ -105,7 +109,6 @@ void VapeUI_RenderCategoryPanel(ModuleCategory target_cat, ImVec2 pos) {
     // 自定义分类 Header
     if (visible) {
         // 自定义 Header
-        
         igTextDisabled("^");
         igSameLine(0, 6);
         igText("%s", cat_name);
