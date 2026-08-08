@@ -16,7 +16,7 @@
 
 // 模块分类定义
 typedef enum {
-    CAT_FILE = 0,
+    CAT_CORE = 0,
     CAT_MARIO,
     CAT_RENDER,
     CAT_CONTROL,

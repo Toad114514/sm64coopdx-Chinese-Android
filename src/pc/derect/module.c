@@ -6,7 +6,7 @@ Module g_modules[MAX_MODULES];
 int g_module_count = 0;
 
 static const char* g_category_names[] = {
-    "File", "Mario", "Render", "Control", "Coopnet/Web", "Misc", "Demo"
+    "Core", "Mario", "Render", "Control", "Coopnet/Web", "Misc", "Demo"
 };
 
 const char* Module_GetCategoryName(ModuleCategory cat) {
@@ -164,6 +164,9 @@ void Module_Update(void) {
 void Module_Render(void) {
     int count = sizeof(g_modules) / sizeof(g_modules[0]);
     for (int i = 0; i < count; i++) {
+        // blacklist
+        if (g_modules[i].name == "Background Blur") continue;
+        
         if (g_modules[i].enabled && g_modules[i].on_render) {
             g_modules[i].on_render();
         }

@@ -26,7 +26,7 @@ void bgblur_config(void) {
 }
 
 void bgblur_render(void) {
-    ImDrawList* bgDrawList = igGetBackgroundDrawList_ViewportPtr(NULL);
+    ImDrawList* bgDrawList = igGetBackgroundDrawList(NULL);
     ImGuiIO* io = igGetIO();
     if (!bgDrawList || !io) return;
     
