@@ -44,7 +44,7 @@ typedef struct {
     ModuleCallBack config;
 } Module;
 
-#define MAX_MODULES = 128;
+#define MAX_MODULES 128
 extern Module g_modules[MAX_MODULES];
 extern int g_module_count;
 
