@@ -81,7 +81,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
         igSeparator();
     }
     
-    igPopStyleVal(1);
+    igPopStyleVar(1);
     igPopStyleColor(2);
 
     igPopID();
