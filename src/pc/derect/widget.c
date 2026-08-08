@@ -80,6 +80,9 @@ bool VapeUI_ModuleToggle(Module* mod) {
         igSpacing();
         igSeparator();
     }
+    
+    igPopStyleVal(1);
+    igPopStyleColor(2);
 
     igPopID();
     return clicked;
