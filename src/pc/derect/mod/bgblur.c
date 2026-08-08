@@ -38,8 +38,8 @@ static float g_blur_darkness = 0.55f;
 static float g_blur_radius   = 5.0f;  // 强度
 
 static const ConfigOption bgblur_options[] = {
-    BIND_FLOAT("darkness", "Darkness",    &g_blur_darkness, 0.0f, 1.0f, "%.2f"),
-    BIND_FLOAT("radius",   "Blur Radius", &g_blur_radius,   1.0f, 10.0f, "%.1f")
+    BIND_FLOAT("darkness", "Darkness",    &g_blur_darkness, 0.0f,  1.0f, "%.2f"),
+    BIND_FLOAT("radius",   "Blur Radius", &g_blur_radius,   15.0f, 100.0f, "%.1f")
 };
 #define BGBLUR_OPTION_COUNT sizeof(bgblur_options) / sizeof(bgblur_options[0])
 
