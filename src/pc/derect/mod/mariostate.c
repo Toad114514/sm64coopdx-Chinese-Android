@@ -94,7 +94,7 @@ static void inf_vanish_cap_disable(void) {
 
 static bool adf_lavas = true;
 static bool adf_slipper = true;
-static boll adf_death_plane = false;
+static bool adf_death_plane = false;
 static bool adf_all = false;
 
 static struct Surface ready_to_place;
