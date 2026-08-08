@@ -1,10 +1,8 @@
 #include "module.h"
 #include <stddef.h>
 
-#define MAX_MODULES 128
-
-extern Module g_modules[MAX_MODULES];
-static int g_module_count = 0;
+Module g_modules[MAX_MODULES];
+int g_module_count = 0;
 
 static const char* g_category_names[] = {
     "File", "Mario", "Render", "Control", "Coopnet/Web", "Misc", "Demo"

@@ -1,9 +1,10 @@
-#include "config.h"
-#include "module.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+#include "config.h"
+#include "module.h"
 
 #include "../cimgui/cimgui.h"
 
@@ -23,8 +24,6 @@ typedef struct {
 #define MAX_CONFIG_ENTRIES 128
 static ConfigEntry s_entries[MAX_CONFIG_ENTRIES];
 static int s_entry_count = 0;
-
-static g_module_count = sizeof(g_modules) / sizeof(g_modules[0]);
 
 // 去除字符串前后空格
 static char* trim_whitespace(char* str) {
