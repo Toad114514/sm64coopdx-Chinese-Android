@@ -43,8 +43,19 @@ void derect_panel_render(bool* p_open) {
     if (!*p_open) return;
 
     ImGuiIO* io = igGetIO();
+    
+    // ============ 其他模块的组件渲染 ===============
+    
+    // >> Background Blur
+    Module* bgblur = Module_Find("GUIBlur");
+    
+    if (bgblur && bgblur->enabled) {
+        if (bgblur->on_render) {
+            bgblur->on_render();
+        }
+    }
 
-    // ================= 1. 顶部导航栏 =================
+    // ================= 顶部导航栏 =================
     igSetNextWindowPos((ImVec2){io->DisplaySize.x * 0.5f, 20}, ImGuiCond_Always, (ImVec2){0.5f, 0.0f});
     igBegin("TopBar", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
     
@@ -79,20 +90,7 @@ void derect_panel_render(bool* p_open) {
 
     igEnd();
 
-    // ================= 2. Render 分类窗口 =================
-    // igSetNextWindowPos((ImVec2){200, 80}, ImGuiCond_FirstUseEver, (ImVec2){0, 0});
-    // igSetNextWindowSize((ImVec2){220, 450}, ImGuiCond_FirstUseEver);
-    
-    // 隐藏系统默认标题栏，使用自定义简洁头部
-    //igBegin("RenderPanel", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
-
-    // 自定义窗口 Header
-    // igTextDisabled("^"); igSameLine(0, 5);
-    // igText("Render");
-    // igSameLine(igGetWindowWidth() - 20, 0);
-    // igTextDisabled("^");
-    // igSeparator();
-    // igDummy((ImVec2){0, 2});
+    // ================= Render 分类窗口 =================
     
     float start_x = 50.0f;
     float start_y = 70.0f;
