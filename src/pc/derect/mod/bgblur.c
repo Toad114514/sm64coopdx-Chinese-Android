@@ -215,7 +215,7 @@ void bgblur_render(void) {
     if (scissor_was_enabled) glEnable(GL_SCISSOR_TEST);
 
     // 6. 将最终高斯模糊纹理 (s_tex_pong) 提交给 ImGui 绘制
-    ImDrawList* bgList = igGetBackgroundDrawList_Nil();
+    ImDrawList* bgList = igGetBackgroundDrawList(NULL);
     if (bgList && s_tex_pong != 0) {
         ImVec2 uv0 = {0.0f, 1.0f};
         ImVec2 uv1 = {1.0f, 0.0f};
