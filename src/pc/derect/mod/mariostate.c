@@ -126,7 +126,6 @@ static void adf_loop(void) {
         if (adf_lavas) {
             switch (mario_floor) {
                 case SURFACE_BURNING:
-                case SURFACE_LAVA:
                 case SURFACE_DEEP_QUICKSAND:
                 case SURFACE_SHALLOW_QUICKSAND:
                 case SURFACE_MOVING_QUICKSAND:
