@@ -71,7 +71,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
         igPushStyleColor_Vec4(ImGuiCol_ChildBg, (ImVec4){0.1f, 0.1f, 0.1f, 0.5f});
         
         // 渲染模块自带的配置项（Slider/Combo/Checkbox 等）
-        mod->on_config();
+        mod->config();
 
         igPopStyleColor(1);
         igEndGroup();
