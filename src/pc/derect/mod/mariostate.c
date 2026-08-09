@@ -215,17 +215,15 @@ static Vec3f freeze_pos = {0.00f, 0.00f, 0.00f};
 static float fp_plusx = 100.00f;
 static float fp_plusy = 100.00f;
 static float fp_plusz = 100.00f;
-static bool fp_freeze = false;
-static bool fp_gunmu = true;
+static bool fp_dontlockxz = true;
 static bool fp_fall = false;
 
 static const ConfigOption s_fp_option[] = {
     BIND_FLOAT ("plusx", "+X to",  &fp_plusx,  -10000.00f, 10000.00f, "%f"),
     BIND_FLOAT ("plusy", "+Y to",  &fp_plusy,  -10000.00f, 10000.00f, "%f"),
     BIND_FLOAT ("plusz", "+Z to",  &fp_plusz,  -10000.00f, 10000.00f, "%f"),
-    BIND_BOOL  ("gunmu", "Walk on GunMu",     &fp_gunmu),
-    BIND_BOOL  ("freeze","MarioState Freeze", &fp_freeze),
-    BIND_BOOL  ("fall",  "Falldown",          &fp_fall),
+    BIND_BOOL  ("dlockxz", "Dont Lock X/Z",   &fp_dontlockxz);
+    BIND_BOOL  ("fall",    "Falldown",        &fp_fall),
 };
 #define FPOS_COUNT (sizeof(s_fp_option) / sizeof(s_fp_option[0]))
 
@@ -238,29 +236,28 @@ static void fp_enable(void) {
     if (!m) return;
     
     memcpy(orig_pos, m->pos, sizeof(Vec3f));
-    freeze_pos[0] += fp_plusx;
-    freeze_pos[1] += fp_plusy;
-    freeze_pos[2] += fp_plusz;
-    
-    if (fp_freeze) {
-        memcpy(m->pos, orig_pos, sizeof(Vec3f));
-        m->freeze = true;
-    }
 }
 
 static void fp_loop(void) {
     struct MarioState* m = &gMarioStates[0];
     if (!m) return;
     
-    if (fp_gunmu && !fp_freeze) m->pos[1] = freeze_pos[1];
-    if (!fp_freeze) memcpy(m->pos, freeze_pos, sizeof(Vec3f));
+    if (!fp_dontlockxz) freeze_pos[0] = orig_pos + fp_plusx;
+                        freeze_pos[1] = orig_pos + fp_plusy;
+    if (!fp_dontlockxz) freeze_pos[2] = orig_pos + fp_plusz;
+    
+    if (fp_dontlockxz) {
+        freeze_pos[0] = orig_pos[0];
+        freeze_pos[2] = orig_pos[2];
+    }
+    
+    memcpy(m->pos, freeze_pos, sizeof(Vec3f));
 }
 
 static void fp_disable(void) {
     struct MarioState* m = &gMarioStates[0];
     if (!m) return;
     
-    if (fp_freeze) m->freeze = true;
     if (!fp_fall) memcpy(m->pos, orig_pos, sizeof(Vec3f));
 }
 
