@@ -1,7 +1,8 @@
 #include "types.h"
 #include "game/mario.h"
 #include "game/object_helpers.h"
-#include "game/behavior_data.h"
+#include "engine/behavior_script.h"
+#include "behavior_data.h"
 #include "engine/math_util.h"
 #include "audio/external.h"
 
