@@ -3,6 +3,7 @@
 #include "surface_terrains.h"
 #include "types.h"
 #include "sm64.h"
+//#include "PR/os_cont.h"
 #include "../module.h"
 
 #include "../config.h"
@@ -162,9 +163,45 @@ static void adf_loop(void) {
     
     // 重定向
     if (willReplace) {
-        ready_to_place = *m->floor;
-        ready_to_place.type = SURFACE_DEFAULT;
-        m->floor = &ready_to_place;
+        m->floor->type = SURFACE_DEFAULT;
+    }
+}
+
+// AnyBLJ
+//if m.action == ACT_LONG_JUMP and
+//   m.controller.buttonDown & Z_TRIG ~= 0 and
+//      m.forwardVel < -15 then
+//      m.vel.y = -30
+//end
+static void anyblj_loop(void){
+    struct MarioState* m = &gMarioStates[0];
+    if (m->action == ACT_LONG_JUMP && m->forwardVel < -15 && (m->controller->buttonDown & Z_TRIG) != 0) {
+        m->vel->y = -30;
+    }
+}
+
+// m.numLives = 100
+static void maxlife_enable(void) {
+    struct MarioState* m = &gMarioStates[0];
+    m->numLives = 100;
+}
+
+// speed
+static int speedx = 4;
+
+static const ConfigOption s_speed_config[] = {
+    BIND_INT ("speed", "Multiple Speed", &speedx, 0, 20, "%d");
+};
+#define SPEEDX_COUNT (sizeof(s_speed_config) / sizeof(s_speed_config[0]))
+
+static void speed_config(void) {
+    Config_RenderOptions(s_speed_config, SPEEDX_COUNT);
+}
+static void speed_loop(void) {
+    struct MarioState* m = &gMarioStates[0];
+    if (m->action != ACT_BUBBLED && m->action != ACT_WATER_JUMP && m->action != ACT_HOLD_WATER_JUMP) {
+        m->vel->x = m->vel->x * speedx;
+        m->vel->z = m->vel->z * speedx;
     }
 }
 
@@ -173,11 +210,19 @@ void module_mario_state(void){
     Module_HookConfig("GodMode", god_op);
     Config_RegisterModuleOptions("GodMode", s_god_mode_option, GMOD_COUNT);
     
-    Module_Register("InfWCap",    CAT_MARIO, false, NULL, green, NULL, inf_wing_cap_disable,    inf_wing_cap_loop);
-    Module_Register("InfMCap",    CAT_MARIO, false, NULL, green, NULL, inf_metal_cap_disable,   inf_metal_cap_loop);
-    Module_Register("InfVCap",    CAT_MARIO, false, NULL, green, NULL, inf_vanish_cap_disable,  inf_vanish_cap_loop);
+    Module_Register("MaxLives",   CAT_MARIO, false, NULL, green, maxlife_enbale, NULL, NULL);
+    
+    Module_Register("MultipleSpeed", CAT_MARIO, false, NULL, green, NULL, NULL, speed_loop);
+    Module_HookConfig("MultipleSpeed", speed_config);
+    Config_RegisterModuleOptions("MultipleSpeed", s_speed_config, SPEEDX_COUNT);
+    
+    Module_Register("InfWCap",    CAT_MARIO, false, NULL, MOD_COLOR_RED,  NULL, inf_wing_cap_disable,    inf_wing_cap_loop);
+    Module_Register("InfMCap",    CAT_MARIO, false, NULL, MOD_COLOR_GREEN, NULL, inf_metal_cap_disable,   inf_metal_cap_loop);
+    Module_Register("InfVCap",    CAT_MARIO, false, NULL, MOD_COLOR_BLUE,  NULL, inf_vanish_cap_disable,  inf_vanish_cap_loop);
     
     Module_Register("AntiDeathFloor",  CAT_MARIO, false, NULL, green, NULL, NULL, adf_loop);
     Module_HookConfig("AntiDeathFloor", adf_config);
     Config_RegisterModuleOptions("AntiDeathFloor", s_anti_death_floor_config, ADF_COUNT);
+    
+    Module_Register("AnyBLJ",     CAT_MARIO, false, NULL, green, NULL, NULL, anyblj_loop);
 }
