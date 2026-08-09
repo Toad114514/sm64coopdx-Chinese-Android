@@ -207,8 +207,8 @@ static void speed_loop(void) {
 
 // FreezePos
 
-static Vec3f orig_pos   = {0.00f, 0.00f, 0.00f}
-static Vec3f freeze_pos = {0.00f, 0.00f, 0.00f}
+static Vec3f orig_pos   = {0.00f, 0.00f, 0.00f};
+static Vec3f freeze_pos = {0.00f, 0.00f, 0.00f};
 
 static float fp_plusx = 100.00f;
 static float fp_plusy = 100.00f;
