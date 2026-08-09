@@ -101,7 +101,7 @@ void autobowser_loop(void) {
         } else {
             // 如果没找到炸弹（比如阶段转换中），保持高速度旋转盲甩
             if (m->angleVel[1] >= 0x700) {
-                set_mario_action(m, ACT_RELEASE_BOWSER, 0);
+                set_mario_action(m, ACT_RELEASING_BOWSER, 0);
                 m->forwardVel = 100.0f;
             }
         }
