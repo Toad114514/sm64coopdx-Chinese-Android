@@ -63,6 +63,7 @@ void autobowser_loop(void) {
         // 迫使库巴进入被抓取状态/判定碰撞
         if (m->controller) {
             m->controller->buttonPressed |= B_BUTTON; // 触发按 B 抓取
+            m->controller->buttonDown |= B_BUTTON;
         }
         return;
     }
@@ -89,20 +90,21 @@ void autobowser_loop(void) {
             // 计算当前旋转角度与目标炸弹角度的残差
             s16 angleDiff = m->faceAngle[1] - targetYaw;
 
-            // 当转速足够高，且朝向刚好对准炸弹范围时 (约 15 度误差内)
-            if (m->angleVel[1] >= 0x600 && absi(angleDiff) < 0x0A00) {
+            // 家家家。
+            if (m->angleVel[1] >= 0x1200 && absi(angleDiff) < 0x1200) {
                 set_mario_action(m, ACT_RELEASING_BOWSER, 0);
                 // 飞飞飞
-                m->forwardVel = 120.0f;
+                m->forwardVel = 260.0f;
                 
                 //play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, MARIO_SOUND_SO_LONG_BOWSER);
                 play_character_sound(m, CHAR_SOUND_SO_LONGA_BOWSER);
             }
         } else {
             // 如果没找到炸弹（比如阶段转换中），保持高速度旋转盲甩
-            if (m->angleVel[1] >= 0x700) {
+            if (m->angleVel[1] >= 0x1800) {
                 set_mario_action(m, ACT_RELEASING_BOWSER, 0);
-                m->forwardVel = 100.0f;
+                m->forwardVel = 220.0f;
+                play_character_sound(m, CHAR_SOUND_SO_LONGA_BOWSER);
             }
         }
     }
