@@ -89,6 +89,7 @@ static void demo_show() {
 extern void module_mario_state(void);
 extern void module_esp(void);
 extern void module_bgblur(void);
+extern void module_network(void);
 
 // 统一在此处注册所有游戏/应用模块
 void Module_InitRegistry(void) {
@@ -101,21 +102,16 @@ void Module_InitRegistry(void) {
     module_mario_state();
     module_esp();
     module_bgblur();
+    module_network();
 
     // ==================== 1. Render 分类 ====================
     Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);
     Module_Register("AudioVisualizer", CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);
     Module_Register("BlackCapture",    CAT_RENDER, false, "LCtrl+NO", green, NULL, NULL, NULL);
     Module_Register("Keystrokes",      CAT_RENDER, false, "LAlt+K",   green, NULL, NULL, NULL);
-    Module_Register("Background",      CAT_RENDER, true,  NULL,       cyan,  NULL, NULL, NULL);
-    Module_Register("GUIBlur",         CAT_RENDER, true,  NULL,       cyan,  NULL, NULL, NULL);
-    Module_Register("这是中文合成效果",   CAT_RENDER, false, NULL,       cyan,  NULL, NULL, NULL);
 
     // ==================== 2. Web 分类 ====================
     Module_Register("AntiRickroll",    CAT_WEB,    true,  NULL,       MOD_COLOR_RED, NULL, NULL, NULL);
-    Module_Register("LiveStream",      CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
-    Module_Register("QuakeWarning",    CAT_WEB,    true,  NULL,       MOD_COLOR_PINK, NULL, NULL, NULL);
-    Module_Register("BiliFans",        CAT_WEB,    true,  NULL,       green, NULL, NULL, NULL);
 
     // ==================== 3. Misc 分类 ====================
     Module_Register("AutoSpeak",       CAT_MISC,   true,  NULL,       MOD_COLOR_BLUE, NULL, NULL, NULL);
@@ -125,7 +121,7 @@ void Module_InitRegistry(void) {
     // Demo Sections
     Module_Register("Notification",    CAT_DEMO,   false, NULL,       green, NULL, NULL, NULL);
     Module_Register("Function Printf", CAT_DEMO,   false, NULL,       green, printf_test_on_enable, printf_test_on_disable, printf_test_good_work);
-    
+    Module_Register("这是中文合成效果",   CAT_DEMO,   false, NULL,       cyan,  NULL, NULL, NULL);
     Module_Register("ImGUI Demo",      CAT_DEMO,   false, NULL,       green, demo_show, demo_close, demo_loop);
     Module_HookRender("ImGUI Demo",    demo_loop);
 }

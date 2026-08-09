@@ -30,7 +30,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
         igPushStyleColor_Vec4(ImGuiCol_HeaderHovered, (ImVec4){active_color.x * 1.1f, active_color.y * 1.1f, active_color.z * 1.1f, 1.0f});
     } else {
         igPushStyleColor_Vec4(ImGuiCol_Header, (ImVec4){1.0f, 1.0f, 1.0f, 1.0f});
-        igPushStyleColor_Vec4(ImGuiCol_HeaderHovered, (ImVec4){0.14f, 0.14f, 0.18f, 0.80f});
+        igPushStyleColor_Vec4(ImGuiCol_HeaderHovered, (ImVec4){0.14f, 0.14f, 0.14f, 0.80f});
     }
     
     igPushStyleVar_Vec2(ImGuiStyleVar_ItemSpacing, (ImVec2){0.0f, 6.0f});

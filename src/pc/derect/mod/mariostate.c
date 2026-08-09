@@ -117,7 +117,7 @@ static void adf_loop(void) {
     if (!m || !m->floor) return;
     
     s16 mario_floor = m->floor->type;
-    bool willReplace = true;
+    bool willReplace = false;
     
     if (adf_all) {
         willReplace = true;
@@ -190,7 +190,7 @@ static void maxlife_enable(void) {
 static int speedx = 4;
 
 static const ConfigOption s_speed_config[] = {
-    BIND_INT ("speed", "Multiple Speed", &speedx, 0, 20, "%d");
+    BIND_INT ("speed", "Multiple Speed", &speedx, 0, 20, "%d")
 };
 #define SPEEDX_COUNT (sizeof(s_speed_config) / sizeof(s_speed_config[0]))
 
