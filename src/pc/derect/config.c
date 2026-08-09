@@ -75,8 +75,9 @@ void Config_Save(const char* filename) {
         Module* mod = &g_modules[i];
         fprintf(file, "[%s]\n", mod->name);
         fprintf(file, "enabled=%d\n", mod->enabled ? 1 : 0);
-        // 始终写入 shortcut 行 (允许空值)，否则"清除绑定"重启后会恢复注册时的默认快捷键
-        fprintf(file, "shortcut=%s\n", mod->shortcut);
+        if (mod->shortcut[0] != '\0') {
+            fprintf(file, "shortcut=%s\n", mod->shortcut);
+        }
 
         // 写入该模块注册的所有自定义变量
         for (int j = 0; j < s_entry_count; j++) {

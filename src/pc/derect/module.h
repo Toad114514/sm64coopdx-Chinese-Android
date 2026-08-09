@@ -75,11 +75,4 @@ Module* Module_GetBindingModule(void);
 void Module_SetShortcut(Module* mod, const char* shortcut);
 void Module_FormatShortcut(const Module* mod, char* buf, size_t buf_size);
 
-// 清除绑定与绑定冲突
-void Module_ClearKeybind(Module* mod);
-bool Module_IsConflictPending(void);
-Module* Module_GetConflictOwner(void);
-const char* Module_GetConflictShortcut(void);
-void Module_ResolveConflict(bool steal);
-
 #endif

@@ -106,49 +106,11 @@ void VapeUI_KeybindRow(Module* mod) {
 
     char bind_text[48];
     const char* key_text = (mod->bind_key != ImGuiKey_None && mod->shortcut[0] != '\0')
-        ? mod->shortcut : "None";
-    snprintf(bind_text, sizeof(bind_text), "按键绑定: %s", key_text);
+        ? mod->shortcut : "GunMu";
+    snprintf(bind_text, sizeof(bind_text), "Keybind: %s", key_text);
 
-    // 有绑定时左侧按钮留出清除按钮的位置，避免溢出 290px 面板
-    bool has_bind = (mod->bind_key != ImGuiKey_None);
-    float avail = igGetContentRegionAvail().x;
-    float clear_w = 56.0f;
-    float bind_w = has_bind ? (avail - clear_w - 8.0f) : 0.0f;
-    if (bind_w < 0.0f) bind_w = 0.0f;
-
-    if (igButton(bind_text, (ImVec2){bind_w, 0})) {
+    if (igButton(bind_text, (ImVec2){0, 0})) {
         Module_BeginKeybind(mod);
-    }
-
-    if (has_bind) {
-        igSameLine(0, 8);
-        if (igButton("清除", (ImVec2){clear_w, 0})) {
-            Module_ClearKeybind(mod);
-        }
-    }
-}
-
-// 绑定冲突弹窗：让用户当场选择抢占或取消
-void VapeUI_KeybindConflictPopup(void) {
-    if (!Module_IsConflictPending()) return;
-
-    igOpenPopup_Str("KeybindConflict", ImGuiPopupFlags_None);
-    if (igBeginPopupModal("键位冲突", NULL, 0)) {
-        Module* owner = Module_GetConflictOwner();
-        const char* combo = Module_GetConflictShortcut();
-        igText("组合键 %s 已被模块 %s 使用，\n是否抢占？",
-               (combo && combo[0]) ? combo : "?",
-               owner ? owner->name : "?");
-        igSpacing();
-
-        if (igButton("抢占", (ImVec2){0, 0})) {
-            Module_ResolveConflict(true);
-        }
-        igSameLine(0, 8);
-        if (igButton("取消", (ImVec2){0, 0})) {
-            Module_ResolveConflict(false);
-        }
-        igEndPopup();
     }
 }
 
