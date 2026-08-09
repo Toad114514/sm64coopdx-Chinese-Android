@@ -1,10 +1,14 @@
 #include "types.h"
 #include "game/mario.h"
 #include "game/object_helpers.h"
+#include "game/level_update.h"          // 包含 gMarioStates 声明
+#include "game/object_list_processor.h"
 #include "engine/behavior_script.h"
 #include "behavior_data.h"
 #include "engine/math_util.h"
 #include "audio/external.h"
+#include "object_fields.h"
+#include "sm64.h"
 
 #include "../module.h"
 
@@ -91,7 +95,8 @@ void autobowser_loop(void) {
                 // 飞飞飞
                 m->forwardVel = 120.0f;
                 
-                play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, MARIO_SOUND_SO_LONG_BOWSER);
+                //play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, MARIO_SOUND_SO_LONG_BOWSER);
+                play_character_sound(m, CHAR_SOUND_SO_LONGA_BOWSER)
             }
         } else {
             // 如果没找到炸弹（比如阶段转换中），保持高速度旋转盲甩
