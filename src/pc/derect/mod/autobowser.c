@@ -91,12 +91,12 @@ void autobowser_loop(void) {
 
             // 当转速足够高，且朝向刚好对准炸弹范围时 (约 15 度误差内)
             if (m->angleVel[1] >= 0x600 && absi(angleDiff) < 0x0A00) {
-                set_mario_action(m, ACT_RELEASE_BOWSER, 0);
+                set_mario_action(m, ACT_RELEASING_BOWSER, 0);
                 // 飞飞飞
                 m->forwardVel = 120.0f;
                 
                 //play_mario_sound(m, SOUND_ACTION_TERRAIN_JUMP, MARIO_SOUND_SO_LONG_BOWSER);
-                play_character_sound(m, CHAR_SOUND_SO_LONGA_BOWSER)
+                play_character_sound(m, CHAR_SOUND_SO_LONGA_BOWSER);
             }
         } else {
             // 如果没找到炸弹（比如阶段转换中），保持高速度旋转盲甩
