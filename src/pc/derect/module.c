@@ -454,7 +454,18 @@ static bool is_modifier_key(int key) {
 // 录制状态：等待下一个非修饰键按下 (基于自身上升沿检测)
 static void Module_CaptureKeybind(void) {
     if (!s_binding_module) return;
-    if (s_conflict_pending) return; // 等待弹窗选择抢占/取消
+    if (s_conflict_pending) {
+        // 冲突弹窗期间也可用 Esc 放弃录制，防止永久卡死
+        if (igIsKeyDown_Nil(ImGuiKey_Escape) && !s_prev_key_down[ImGuiKey_Escape]) {
+            s_conflict_pending = false;
+            s_conflict_owner = NULL;
+            s_conflict_key = ImGuiKey_None;
+            s_conflict_mods = 0;
+            s_conflict_shortcut[0] = '\0';
+            s_binding_module = NULL;
+        }
+        return;
+    }
     ImGuiIO* io = igGetIO();
     if (!io) return;
 
