@@ -223,7 +223,7 @@ static const ConfigOption s_fp_option[] = {
     BIND_FLOAT ("plusz", "+Z to",  &fp_plusz,  -10000.00f, 10000.00f, "%f"),
     BIND_BOOL  ("gunmu", "Walk on GunMu",     &fp_gunmu),
     BIND_BOOL  ("freeze","MarioState Freeze", &fp_freeze),
-    BIND_BOOL  ("fall",  "Falldown",          &fp_fall)
+    BIND_BOOL  ("fall",  "Falldown",          &fp_fall),
 }
 
 #define FPOS_COUNT (sizeof(s_fp_option) / sizeof(s_fp_option[0]))
