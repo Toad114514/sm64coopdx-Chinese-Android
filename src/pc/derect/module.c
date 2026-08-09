@@ -90,6 +90,7 @@ extern void module_mario_state(void);
 extern void module_esp(void);
 extern void module_bgblur(void);
 extern void module_network(void);
+extern void module_autobowser(void);
 
 // 统一在此处注册所有游戏/应用模块
 void Module_InitRegistry(void) {
@@ -103,6 +104,7 @@ void Module_InitRegistry(void) {
     module_esp();
     module_bgblur();
     module_network();
+    module_autobowser();
 
     // ==================== 1. Render 分类 ====================
     Module_Register("Arraylist",       CAT_RENDER, true,  NULL,       green, NULL, NULL, NULL);
