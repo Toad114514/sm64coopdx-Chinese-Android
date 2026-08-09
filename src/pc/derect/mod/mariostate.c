@@ -176,7 +176,7 @@ static void adf_loop(void) {
 static void anyblj_loop(void){
     struct MarioState* m = &gMarioStates[0];
     if (m->action == ACT_LONG_JUMP && m->forwardVel < -15 && (m->controller->buttonDown & Z_TRIG) != 0) {
-        m->vel->y = -30;
+        m->vel[1] = -30;
     }
 }
 
@@ -200,8 +200,8 @@ static void speed_config(void) {
 static void speed_loop(void) {
     struct MarioState* m = &gMarioStates[0];
     if (m->action != ACT_BUBBLED && m->action != ACT_WATER_JUMP && m->action != ACT_HOLD_WATER_JUMP) {
-        m->vel->x = m->vel->x * speedx;
-        m->vel->z = m->vel->z * speedx;
+        m->vel[0] = m->vel[0] * speedx;
+        m->vel[2] = m->vel[2] * speedx;
     }
 }
 
@@ -210,13 +210,13 @@ void module_mario_state(void){
     Module_HookConfig("GodMode", god_op);
     Config_RegisterModuleOptions("GodMode", s_god_mode_option, GMOD_COUNT);
     
-    Module_Register("MaxLives",   CAT_MARIO, false, NULL, green, maxlife_enbale, NULL, NULL);
+    Module_Register("MaxLives",   CAT_MARIO, false, NULL, green, maxlife_enable, NULL, NULL);
     
     Module_Register("MultipleSpeed", CAT_MARIO, false, NULL, green, NULL, NULL, speed_loop);
     Module_HookConfig("MultipleSpeed", speed_config);
     Config_RegisterModuleOptions("MultipleSpeed", s_speed_config, SPEEDX_COUNT);
     
-    Module_Register("InfWCap",    CAT_MARIO, false, NULL, MOD_COLOR_RED,  NULL, inf_wing_cap_disable,    inf_wing_cap_loop);
+    Module_Register("InfWCap",    CAT_MARIO, false, NULL, MOD_COLOR_RED,   NULL, inf_wing_cap_disable,    inf_wing_cap_loop);
     Module_Register("InfMCap",    CAT_MARIO, false, NULL, MOD_COLOR_GREEN, NULL, inf_metal_cap_disable,   inf_metal_cap_loop);
     Module_Register("InfVCap",    CAT_MARIO, false, NULL, MOD_COLOR_BLUE,  NULL, inf_vanish_cap_disable,  inf_vanish_cap_loop);
     
