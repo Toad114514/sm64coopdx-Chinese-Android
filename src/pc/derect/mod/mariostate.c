@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "game/mario.h"
 #include "game/level_update.h"
 #include "surface_terrains.h"
@@ -235,13 +237,13 @@ static void fp_enable(void) {
     struct MarioState* m = &gMarioStates[0];
     if (!m) return;
     
-    orig_pos = m->pos;
+    memcpy(orig_pos, m->pos, sizeof(Vec3f));
     freeze_pos[0] += fp_plusx;
     freeze_pos[1] += fp_plusy;
     freeze_pos[2] += fp_plusz;
     
     if (fp_freeze) {
-        m->pos = freeze_pos;
+        memcpy(m->pos, orig_pos, sizeof(Vec3f));
         m->freeze = true;
     }
 }
@@ -251,7 +253,7 @@ static void fp_loop(void) {
     if (!m) return;
     
     if (fp_gunmu && !fp_freeze) m->pos[1] = freeze_pos[1];
-    if (!fp_freeze) m->pos = freeze_pos;
+    if (!fp_freeze) memcpy(m->pos, freeze_pos, sizeof(Vec3f));
 }
 
 static void fp_disable(void) {
@@ -259,7 +261,7 @@ static void fp_disable(void) {
     if (!m) return;
     
     if (fp_freeze) m->freeze = true;
-    if (!fp_fall) m->pos = orig_pos;
+    if (!fp_fall) memcpy(m->pos, orig_pos, sizeof(Vec3f));
 }
 
 void module_mario_state(void){
