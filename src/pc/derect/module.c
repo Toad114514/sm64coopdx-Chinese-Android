@@ -343,6 +343,19 @@ void Module_Toggle(Module* mod) {
 
 static Module* s_binding_module = NULL;
 
+// 上一帧(游戏逻辑帧)的按键状态，用于自己检测"按下"上升沿。
+// 不能依赖 igIsKeyPressed()：它只在 igNewFrame 内部计算 (DownDuration==0 的窗口极短)，
+// 而本项目的 Module_Update 在每帧的 igNewFrame 之前执行，中间还可能有多个插值渲染帧，
+// 导致按下事件经常被漏检。
+static bool s_prev_key_down[ImGuiKey_NamedKey_END] = { false };
+
+// 每次游戏逻辑帧结束后保存当前按键状态
+static void Module_SaveKeyStates(void) {
+    for (int k = ImGuiKey_Tab; k < ImGuiKey_NamedKey_END; k++) {
+        s_prev_key_down[k] = igIsKeyDown_Nil(k);
+    }
+}
+
 void Module_BeginKeybind(Module* mod) {
     s_binding_module = mod;
 }
@@ -372,7 +385,7 @@ static bool is_modifier_key(int key) {
     }
 }
 
-// 录制状态：等待下一个非修饰键按下
+// 录制状态：等待下一个非修饰键按下 (基于自身上升沿检测)
 static void Module_CaptureKeybind(void) {
     if (!s_binding_module) return;
     ImGuiIO* io = igGetIO();
@@ -381,7 +394,7 @@ static void Module_CaptureKeybind(void) {
     for (int k = ImGuiKey_Tab; k < ImGuiKey_NamedKey_END; k++) {
         if (is_modifier_key(k)) continue;
         if (k >= ImGuiKey_GamepadStart) break; // 手柄/鼠标键不参与绑定
-        if (igIsKeyPressed_Bool(k, false)) {
+        if (igIsKeyDown_Nil(k) && !s_prev_key_down[k]) {
             if (k == ImGuiKey_Escape) {
                 s_binding_module = NULL; // 取消录制
                 return;
@@ -423,7 +436,8 @@ void Module_HandleShortcuts(void) {
         if ((mod->bind_mods & ImGuiMod_Alt)   && !io->KeyAlt)   continue;
         if ((mod->bind_mods & ImGuiMod_Super) && !io->KeySuper) continue;
 
-        if (igIsKeyPressed_Bool(mod->bind_key, false)) {
+        // 自检测上升沿：上一逻辑帧未按下、当前已按下
+        if (igIsKeyDown_Nil(mod->bind_key) && !s_prev_key_down[mod->bind_key]) {
             Module_Toggle(mod);
         }
     }
@@ -432,6 +446,7 @@ void Module_HandleShortcuts(void) {
 // will call on game/game_init.c
 void Module_Update(void) {
     Module_HandleShortcuts();
+    Module_SaveKeyStates();
 
     int count = sizeof(g_modules) / sizeof(g_modules[0]);
     for (int i = 0; i < count; i++) {

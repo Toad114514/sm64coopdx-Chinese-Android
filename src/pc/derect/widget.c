@@ -64,7 +64,6 @@ bool VapeUI_ModuleToggle(Module* mod) {
             igBeginGroup();
             igPushStyleColor_Vec4(ImGuiCol_ChildBg, (ImVec4){0.1f, 0.1f, 0.1f, 0.5f});
             
-            // 渲染模块自带的配置项（Slider/Combo/Checkbox 等）
             mod->config();
 
             igPopStyleColor(1);
@@ -95,20 +94,20 @@ void VapeUI_KeybindRow(Module* mod) {
         igPushStyleColor_Vec4(ImGuiCol_Button, (ImVec4){0.80f, 0.45f, 0.0f, 1.0f});
         igPushStyleColor_Vec4(ImGuiCol_ButtonHovered, (ImVec4){0.90f, 0.55f, 0.0f, 1.0f});
         igPushStyleColor_Vec4(ImGuiCol_ButtonActive, (ImVec4){0.70f, 0.40f, 0.0f, 1.0f});
-        if (igButton("按下按键... (点击取消)", (ImVec2){0, 0})) {
+        if (igButton("Input a Key... (Click to Cancel)", (ImVec2){0, 0})) {
             Module_CancelKeybind();
         }
         igPopStyleColor(3);
 
         igSameLine(0, 8);
-        igTextDisabled("等待按键输入");
+        igTextDisabled("Waiting...");
         return;
     }
 
     char bind_text[48];
     const char* key_text = (mod->bind_key != ImGuiKey_None && mod->shortcut[0] != '\0')
-        ? mod->shortcut : "None";
-    snprintf(bind_text, sizeof(bind_text), "按键绑定: %s", key_text);
+        ? mod->shortcut : "GunMu";
+    snprintf(bind_text, sizeof(bind_text), "Keybind: %s", key_text);
 
     if (igButton(bind_text, (ImVec2){0, 0})) {
         Module_BeginKeybind(mod);
