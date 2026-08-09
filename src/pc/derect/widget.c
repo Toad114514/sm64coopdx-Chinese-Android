@@ -44,12 +44,16 @@ bool VapeUI_ModuleToggle(Module* mod) {
     }
     
     float window_w = igGetWindowWidth();
-    igSameLine(window_w - 32.0f, 0.0f);
+    igSameLine(window_w - 35.0f, 0.0f);
     
     // Popups
     //igSameLine(0.0f, 4.0f);
     ImGuiDir arrow_dir = mod->expanded ? ImGuiDir_Down : ImGuiDir_Right;
     if (igArrowButton("##expandBtn", arrow_dir)) {
+        mod->expanded = !mod->expanded;
+    }
+    
+    if (igIsItemClicked(ImGuiMouseButton_Left)) {
         mod->expanded = !mod->expanded;
     }
 
