@@ -205,6 +205,64 @@ static void speed_loop(void) {
     }
 }
 
+// FreezePos
+
+static Vec3f orig_pos   = {0.00f, 0.00f, 0.00f}
+static Vec3f freeze_pos = {0.00f, 0.00f, 0.00f}
+
+static float fp_plusx = 100.00f;
+static float fp_plusy = 100.00f;
+static float fp_plusz = 100.00f;
+static bool fp_freeze = false;
+static bool fp_gunmu = true;
+static bool fp_fall = false;
+
+static const ConfigOption s_fp_option[] = {
+    BIND_FLOAT ("plusx", "+X to",  &fp_plusx,  -10000.00f, 10000.00f, "%f"),
+    BIND_FLOAT ("plusy", "+Y to",  &fp_plusy,  -10000.00f, 10000.00f, "%f"),
+    BIND_FLOAT ("plusz", "+Z to",  &fp_plusz,  -10000.00f, 10000.00f, "%f"),
+    BIND_BOOL  ("gunmu", "Walk on GunMu",     &fp_gunmu);
+    BIND_BOOL  ("freeze","MarioState Freeze", &fp_freeze);
+    BIND_BOOL  ("fall",  "Falldown",          &fp_fall);
+}
+
+#define FPOS_COUNT (sizeof(s_fp_option) / sizeof(s_fp_option[0]))
+
+static void fp_config(void) {
+    Config_RenderOptions(s_fp_option, FPOS_COUNT);
+}
+
+static void fp_enable(void) {
+    struct MarioState* m = &gMarioStates[0];
+    if (!m) return;
+    
+    orig_pos = m->pos;
+    freeze_pos[0] += fp_plusx;
+    freeze_pos[1] += fp_plusy;
+    freeze_pos[2] += fp_plusz;
+    
+    if (fp_freeze) {
+        m->pos = freeze_pos;
+        m->freeze = true;
+    }
+}
+
+static void fp_loop(void) {
+    struct MarioState* m = &gMarioStates[0];
+    if (!m) return;
+    
+    if (fp_gunmu && !fp_freeze) m->pos[1] = freeze_pos[1];
+    if (!fp_freeze) m->pos = freeze_pos;
+}
+
+static void fp_disable(void) {
+    struct MarioState* m = &gMarioStates[0];
+    if (!m) return;
+    
+    if (fp_freeze) m->freeze = true;
+    if (!fp_fall) m->pos = orig_pos;
+}
+
 void module_mario_state(void){
     Module_Register("GodMode",    CAT_MARIO, false, NULL, green, NULL, god_mode_disable,        god_mode_loop);
     Module_HookConfig("GodMode", god_op);
@@ -225,4 +283,8 @@ void module_mario_state(void){
     Config_RegisterModuleOptions("AntiDeathFloor", s_anti_death_floor_config, ADF_COUNT);
     
     Module_Register("AnyBLJ",     CAT_MARIO, false, NULL, green, NULL, NULL, anyblj_loop);
+    
+    Module_Register("FreezePos",  CAT_MARIO, false, NULL, green, fp_enable, fp_disable, fp_loop);
+    Module_HookConfig("FreezePos", fp_config);
+    Config_RegisterModuleOptions("FreezePos", s_fp_option, FPOS_COUNT);
 }
