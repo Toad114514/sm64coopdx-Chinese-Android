@@ -11,7 +11,8 @@
 typedef enum {
     CFG_TYPE_BOOL,
     CFG_TYPE_INT,
-    CFG_TYPE_FLOAT
+    CFG_TYPE_FLOAT,
+    CFG_TYPE_STR
 } ConfigType;
 
 typedef struct {
@@ -19,6 +20,7 @@ typedef struct {
     char var_name[32];
     ConfigType type;
     void* ptr;
+    int size;   // OPT_STR 字符串缓冲区大小 (含结尾 '\0')
 } ConfigEntry;
 
 #define MAX_CONFIG_ENTRIES 128
@@ -36,25 +38,30 @@ static char* trim_whitespace(char* str) {
     return str;
 }
 
-static void AddEntry(const char* mod_name, const char* var_name, ConfigType type, void* ptr) {
+static void AddEntry(const char* mod_name, const char* var_name, ConfigType type, void* ptr, int size) {
     if (s_entry_count >= MAX_CONFIG_ENTRIES) return;
     snprintf(s_entries[s_entry_count].mod_name, 32, "%s", mod_name);
     snprintf(s_entries[s_entry_count].var_name, 32, "%s", var_name);
     s_entries[s_entry_count].type = type;
     s_entries[s_entry_count].ptr = ptr;
+    s_entries[s_entry_count].size = size;
     s_entry_count++;
 }
 
 void Config_RegisterBool(const char* mod_name, const char* var_name, bool* ptr) {
-    AddEntry(mod_name, var_name, CFG_TYPE_BOOL, ptr);
+    AddEntry(mod_name, var_name, CFG_TYPE_BOOL, ptr, 0);
 }
 
 void Config_RegisterInt(const char* mod_name, const char* var_name, int* ptr) {
-    AddEntry(mod_name, var_name, CFG_TYPE_INT, ptr);
+    AddEntry(mod_name, var_name, CFG_TYPE_INT, ptr, 0);
 }
 
 void Config_RegisterFloat(const char* mod_name, const char* var_name, float* ptr) {
-    AddEntry(mod_name, var_name, CFG_TYPE_FLOAT, ptr);
+    AddEntry(mod_name, var_name, CFG_TYPE_FLOAT, ptr, 0);
+}
+
+void Config_RegisterStr(const char* mod_name, const char* var_name, char* ptr, int str_max) {
+    AddEntry(mod_name, var_name, CFG_TYPE_STR, ptr, str_max);
 }
 
 // 写入配置到文件
@@ -77,13 +84,16 @@ void Config_Save(const char* filename) {
             if (strcmp(s_entries[j].mod_name, mod->name) == 0) {
                 switch (s_entries[j].type) {
                     case CFG_TYPE_BOOL:
-                        fprintf(file, "%s=%d\n", s_entries[j].var_name, *(bool*)s_entries[j].ptr ? 1 : 0);
+                        fprintf(file, "%s=%d\n",   s_entries[j].var_name, *(bool*)s_entries[j].ptr ? 1 : 0);
                         break;
                     case CFG_TYPE_INT:
-                        fprintf(file, "%s=%d\n", s_entries[j].var_name, *(int*)s_entries[j].ptr);
+                        fprintf(file, "%s=%d\n",   s_entries[j].var_name, *(int*)s_entries[j].ptr);
                         break;
                     case CFG_TYPE_FLOAT:
                         fprintf(file, "%s=%.2f\n", s_entries[j].var_name, *(float*)s_entries[j].ptr);
+                        break;
+                    case CFG_TYPE_STR:
+                        fprintf(file, "%s=%s\n",   s_entries[j].var_name, (char*)s_entries[j].ptr);
                         break;
                 }
             }
@@ -153,6 +163,12 @@ void Config_Load(const char* filename) {
                             case CFG_TYPE_FLOAT:
                                 *(float*)s_entries[i].ptr = (float)atof(val);
                                 break;
+                            case CFG_TYPE_STR:
+                                if (s_entries[i].size > 0) {
+                                    strncpy((char*)s_entries[i].ptr, val, (size_t)(s_entries[i].size - 1));
+                                    ((char*)s_entries[i].ptr)[s_entries[i].size - 1] = '\0';
+                                }
+                                break;
                         }
                     }
                 }
@@ -177,6 +193,9 @@ void Config_RegisterModuleOptions(const char* mod_name, const ConfigOption optio
                 break;
             case OPT_FLOAT:
                 Config_RegisterFloat(mod_name, opt->key, (float*)opt->ptr);
+                break;
+            case OPT_STR:
+                Config_RegisterStr(mod_name, opt->key, (char*)opt->ptr, opt->str_max);
                 break;
         }
     }
@@ -225,6 +244,15 @@ void Config_RenderOptions(const ConfigOption options[], int count) {
                     0
                 )) {
                     changed = true;
+                }
+                break;
+            
+            case OPT_STR:
+                // 字符串输入框 (str_max 为缓冲区大小，含结尾 '\0')
+                if (opt->str_max > 0) {
+                    if (igInputText(opt->label, (char*)opt->ptr, (size_t)opt->str_max, 0, NULL, NULL)) {
+                        changed = true;
+                    }
                 }
                 break;
         }

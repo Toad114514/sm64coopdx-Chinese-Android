@@ -61,11 +61,11 @@ void autobowser_loop(void) {
         m->faceAngle[1] = bowserYaw; // 面对库巴
 
         // 迫使库巴进入被抓取状态/判定碰撞
-        if (m->controller) {
-            m->controller->buttonPressed |= B_BUTTON; // 触发按 B 抓取
-            m->controller->buttonDown |= B_BUTTON;
-        }
-        return;
+        // if (m->controller) {
+            //m->controller->buttonPressed |= B_BUTTON; // 触发按 B 抓取
+            //m->controller->buttonDown |= B_BUTTON;
+        // }
+        // return;
     }
 
     // 状态 B：已经抓到库巴 (进入旋转与瞄准逻辑)
