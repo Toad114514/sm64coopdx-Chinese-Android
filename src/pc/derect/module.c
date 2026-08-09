@@ -343,6 +343,13 @@ void Module_Toggle(Module* mod) {
 
 static Module* s_binding_module = NULL;
 
+// 绑定冲突状态：录制时按下的组合键已被其他模块占用，等待用户选择抢占/取消
+static bool s_conflict_pending = false;
+static Module* s_conflict_owner = NULL;
+static int s_conflict_key = ImGuiKey_None;
+static int s_conflict_mods = 0;
+static char s_conflict_shortcut[32] = "";
+
 // 上一帧(游戏逻辑帧)的按键状态，用于自己检测"按下"上升沿。
 // 不能依赖 igIsKeyPressed()：它只在 igNewFrame 内部计算 (DownDuration==0 的窗口极短)，
 // 而本项目的 Module_Update 在每帧的 igNewFrame 之前执行，中间还可能有多个插值渲染帧，
@@ -369,6 +376,65 @@ Module* Module_GetBindingModule(void) {
     return s_binding_module;
 }
 
+// 清除模块的快捷键绑定
+void Module_ClearKeybind(Module* mod) {
+    if (!mod) return;
+
+    mod->bind_key = ImGuiKey_None;
+    mod->bind_mods = 0;
+    mod->shortcut[0] = '\0';
+    Config_Save(KEYBIND_CONFIG_PATH);
+    printf("[Derect] Keybind cleared: %s\n", mod->name);
+}
+
+// 是否处于"绑定冲突待处理"状态 (等待弹窗选择抢占/取消)
+bool Module_IsConflictPending(void) {
+    return s_conflict_pending;
+}
+
+// 冲突中被占用的旧模块
+Module* Module_GetConflictOwner(void) {
+    return s_conflict_owner;
+}
+
+// 冲突组合键的显示文本 (如 "Alt+K")
+const char* Module_GetConflictShortcut(void) {
+    return s_conflict_shortcut;
+}
+
+// 处理冲突弹窗的选择
+// steal = true  : 抢占 (清掉旧模块绑定，赋给当前录制模块)
+// steal = false : 取消 (保持录制状态，等待按新键)
+void Module_ResolveConflict(bool steal) {
+    if (!s_conflict_pending) return;
+
+    Module* mod = s_binding_module;
+    Module* owner = s_conflict_owner;
+    int key = s_conflict_key;
+    int mods = s_conflict_mods;
+
+    s_conflict_pending = false;
+    s_conflict_owner = NULL;
+    s_conflict_key = ImGuiKey_None;
+    s_conflict_mods = 0;
+    s_conflict_shortcut[0] = '\0';
+
+    if (steal && mod && owner) {
+        printf("[Derect] Keybind stolen from %s -> %s\n", owner->name, mod->name);
+        owner->bind_key = ImGuiKey_None;
+        owner->bind_mods = 0;
+        owner->shortcut[0] = '\0';
+
+        mod->bind_key = key;
+        mod->bind_mods = mods;
+        Module_FormatShortcut(mod, mod->shortcut, sizeof(mod->shortcut));
+        s_binding_module = NULL;
+        Config_Save(KEYBIND_CONFIG_PATH);
+        printf("[Derect] Keybind %s -> %s\n", mod->name, mod->shortcut);
+    }
+    // 不抢占：s_binding_module 保持不变，继续录制
+}
+
 // 录制过程中忽略纯修饰键 / 保留键
 static bool is_modifier_key(int key) {
     switch (key) {
@@ -388,6 +454,7 @@ static bool is_modifier_key(int key) {
 // 录制状态：等待下一个非修饰键按下 (基于自身上升沿检测)
 static void Module_CaptureKeybind(void) {
     if (!s_binding_module) return;
+    if (s_conflict_pending) return; // 等待弹窗选择抢占/取消
     ImGuiIO* io = igGetIO();
     if (!io) return;
 
@@ -400,11 +467,30 @@ static void Module_CaptureKeybind(void) {
                 return;
             }
             Module* mod = s_binding_module;
+            int mods = (io->KeyCtrl  ? ImGuiMod_Ctrl  : 0)
+                     | (io->KeyShift ? ImGuiMod_Shift : 0)
+                     | (io->KeyAlt   ? ImGuiMod_Alt   : 0)
+                     | (io->KeySuper ? ImGuiMod_Super : 0);
+
+            // 冲突检测：同一组合键已被其他模块占用
+            for (int i = 0; i < g_module_count; i++) {
+                Module* other = &g_modules[i];
+                if (other == mod) continue;
+                if (other->bind_key == k && other->bind_mods == mods) {
+                    s_conflict_pending = true;
+                    s_conflict_owner = other;
+                    s_conflict_key = k;
+                    s_conflict_mods = mods;
+                    Module tmp = { .bind_key = k, .bind_mods = mods };
+                    Module_FormatShortcut(&tmp, s_conflict_shortcut, sizeof(s_conflict_shortcut));
+                    printf("[Derect] Keybind conflict: %s -> %s (owned by %s)\n",
+                           mod->name, s_conflict_shortcut, other->name);
+                    return; // 等待用户选择抢占/取消
+                }
+            }
+
             mod->bind_key = k;
-            mod->bind_mods = (io->KeyCtrl  ? ImGuiMod_Ctrl  : 0)
-                           | (io->KeyShift ? ImGuiMod_Shift : 0)
-                           | (io->KeyAlt   ? ImGuiMod_Alt   : 0)
-                           | (io->KeySuper ? ImGuiMod_Super : 0);
+            mod->bind_mods = mods;
             Module_FormatShortcut(mod, mod->shortcut, sizeof(mod->shortcut));
             s_binding_module = NULL;
             Config_Save(KEYBIND_CONFIG_PATH);

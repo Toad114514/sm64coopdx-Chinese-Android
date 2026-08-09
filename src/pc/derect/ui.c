@@ -99,5 +99,8 @@ void derect_panel_render(bool* p_open) {
         VapeUI_RenderCategoryPanel((ModuleCategory)cat, panel_pos);
     }
     
+    // 绑定冲突确认弹窗 (抢占/取消)
+    VapeUI_KeybindConflictPopup();
+    
     //igEnd();
 }
