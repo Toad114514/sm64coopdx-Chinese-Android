@@ -242,9 +242,9 @@ static void fp_loop(void) {
     struct MarioState* m = &gMarioStates[0];
     if (!m) return;
     
-    if (!fp_dontlockxz) freeze_pos[0] = orig_pos + fp_plusx;
-                        freeze_pos[1] = orig_pos + fp_plusy;
-    if (!fp_dontlockxz) freeze_pos[2] = orig_pos + fp_plusz;
+    if (!fp_dontlockxz) freeze_pos[0] = orig_pos[0] + fp_plusx;
+                        freeze_pos[1] = orig_pos[1] + fp_plusy;
+    if (!fp_dontlockxz) freeze_pos[2] = orig_pos[2] + fp_plusz;
     
     if (fp_dontlockxz) {
         freeze_pos[0] = orig_pos[0];
