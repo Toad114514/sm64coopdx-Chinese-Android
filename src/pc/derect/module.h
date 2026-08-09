@@ -34,9 +34,12 @@ typedef struct {
     ModuleCategory category; // 所属分类
     bool enabled;            // 开启状态
     bool expanded;           // 展开/关闭
-    const char* shortcut;    // 快捷键提示 (无则为 NULL)
+    char shortcut[32];       // 快捷键文本 (如 "LAlt+K"，无则为空串)
     ImVec4 color;            // HUD 显色
-    
+
+    int bind_key;            // 解析后的触发键 (ImGuiKey，无绑定为 ImGuiKey_None)
+    int bind_mods;           // 解析后的修饰键位掩码 (ImGuiMod_*)
+
     ModuleCallBack on_enable;
     ModuleCallBack on_disable;
     ModuleCallBack on_loop;
@@ -62,5 +65,14 @@ const char* Module_GetCategoryName(ModuleCategory cat);
 // callback
 void Module_Update(void);
 void Module_Render(void);
+
+// 快捷键
+void Module_Toggle(Module* mod);
+void Module_HandleShortcuts(void);
+void Module_BeginKeybind(Module* mod);
+void Module_CancelKeybind(void);
+Module* Module_GetBindingModule(void);
+void Module_SetShortcut(Module* mod, const char* shortcut);
+void Module_FormatShortcut(const Module* mod, char* buf, size_t buf_size);
 
 #endif

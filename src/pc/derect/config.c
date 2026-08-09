@@ -68,6 +68,9 @@ void Config_Save(const char* filename) {
         Module* mod = &g_modules[i];
         fprintf(file, "[%s]\n", mod->name);
         fprintf(file, "enabled=%d\n", mod->enabled ? 1 : 0);
+        if (mod->shortcut[0] != '\0') {
+            fprintf(file, "shortcut=%s\n", mod->shortcut);
+        }
 
         // 写入该模块注册的所有自定义变量
         for (int j = 0; j < s_entry_count; j++) {
@@ -128,6 +131,12 @@ void Config_Load(const char* filename) {
                     if (!is_enabled && mod->enabled && mod->on_disable) mod->on_disable();
                     mod->enabled = is_enabled;
                     printf("[derect_config] Process Module config: %s \n", mod->name);
+                }
+            } else if (strcmp(key, "shortcut") == 0) {
+                Module* mod = Module_Find(current_mod);
+                if (mod) {
+                    Module_SetShortcut(mod, val);
+                    printf("[derect_config] Load Module shortcut: %s -> %s\n", mod->name, mod->shortcut);
                 }
             } else {
                 // 处理注册的变量

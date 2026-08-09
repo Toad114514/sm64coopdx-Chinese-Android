@@ -8,6 +8,8 @@
 #include "module.h"
 #include "config.h"
 
+#include <stdio.h>
+
 // 渲染单个模块开关组件
 // label: 模块名, active: 开启状态, shortcut: 快捷键文本(可为NULL), is_cyan: 是否使用青色高亮(如GUIBlur)
 bool VapeUI_ModuleToggle(Module* mod) {
@@ -38,14 +40,7 @@ bool VapeUI_ModuleToggle(Module* mod) {
     /////////nb Click
     bool clicked = igSelectable_Bool(mod->name, mod->enabled, ImGuiSelectableFlags_None, (ImVec2){0.0f, 30.0f});
     if (clicked) {
-        mod->enabled = !(mod->enabled);
-        if (mod->enabled) {
-            if (mod->on_enable) mod->on_enable();
-        } else {
-            if (mod->on_disable) mod->on_disable();
-        }
-        
-        Config_Save("/storage/emulated/0/com.toad1145.derectcoopdxcn/config.ini");
+        Module_Toggle(mod);
     }
     
     float window_w = igGetWindowWidth();
@@ -58,24 +53,30 @@ bool VapeUI_ModuleToggle(Module* mod) {
         mod->expanded = !mod->expanded;
     }
 
-    // 4. 【核心逻辑】如果处于展开状态且有配置项，直接在下方内嵌渲染
-    if (mod->expanded && mod->config) {
-        igSpacing();
-        
-        igIndent(12.0f);
-        igPushItemWidth(width - 12.0f * 2.0f);
-        
-        igBeginGroup();
-        igPushStyleColor_Vec4(ImGuiCol_ChildBg, (ImVec4){0.1f, 0.1f, 0.1f, 0.5f});
-        
-        // 渲染模块自带的配置项（Slider/Combo/Checkbox 等）
-        mod->config();
+    // 4. 【核心逻辑】展开时内嵌渲染配置项，最底部为按键绑定
+    if (mod->expanded) {
+        if (mod->config) {
+            igSpacing();
+            
+            igIndent(12.0f);
+            igPushItemWidth(width - 12.0f * 2.0f);
+            
+            igBeginGroup();
+            igPushStyleColor_Vec4(ImGuiCol_ChildBg, (ImVec4){0.1f, 0.1f, 0.1f, 0.5f});
+            
+            // 渲染模块自带的配置项（Slider/Combo/Checkbox 等）
+            mod->config();
 
-        igPopStyleColor(1);
-        igEndGroup();
+            igPopStyleColor(1);
+            igEndGroup();
 
-        igUnindent(12.0f);
-        igSpacing();
+            igUnindent(12.0f);
+            igSpacing();
+        }
+        
+        // 配置栏最底部的按键绑定
+        VapeUI_KeybindRow(mod);
+
         igSeparator();
     }
     
@@ -84,6 +85,34 @@ bool VapeUI_ModuleToggle(Module* mod) {
 
     igPopID();
     return clicked;
+}
+
+// 按键绑定行：点击进入录制，录制中点击取消
+void VapeUI_KeybindRow(Module* mod) {
+    if (!mod) return;
+
+    if (Module_GetBindingModule() == mod) {
+        igPushStyleColor_Vec4(ImGuiCol_Button, (ImVec4){0.80f, 0.45f, 0.0f, 1.0f});
+        igPushStyleColor_Vec4(ImGuiCol_ButtonHovered, (ImVec4){0.90f, 0.55f, 0.0f, 1.0f});
+        igPushStyleColor_Vec4(ImGuiCol_ButtonActive, (ImVec4){0.70f, 0.40f, 0.0f, 1.0f});
+        if (igButton("按下按键... (点击取消)", (ImVec2){0, 0})) {
+            Module_CancelKeybind();
+        }
+        igPopStyleColor(3);
+
+        igSameLine(0, 8);
+        igTextDisabled("等待按键输入");
+        return;
+    }
+
+    char bind_text[48];
+    const char* key_text = (mod->bind_key != ImGuiKey_None && mod->shortcut[0] != '\0')
+        ? mod->shortcut : "None";
+    snprintf(bind_text, sizeof(bind_text), "按键绑定: %s", key_text);
+
+    if (igButton(bind_text, (ImVec2){0, 0})) {
+        Module_BeginKeybind(mod);
+    }
 }
 
 // 单分类面板动态渲染
