@@ -222,7 +222,7 @@ static const ConfigOption s_fp_option[] = {
     BIND_FLOAT ("plusx", "+X to",  &fp_plusx,  -10000.00f, 10000.00f, "%f"),
     BIND_FLOAT ("plusy", "+Y to",  &fp_plusy,  -10000.00f, 10000.00f, "%f"),
     BIND_FLOAT ("plusz", "+Z to",  &fp_plusz,  -10000.00f, 10000.00f, "%f"),
-    BIND_BOOL  ("dlockxz", "Dont Lock X/Z",   &fp_dontlockxz);
+    BIND_BOOL  ("dlockxz", "Dont Lock X/Z",   &fp_dontlockxz),
     BIND_BOOL  ("fall",    "Falldown",        &fp_fall),
 };
 #define FPOS_COUNT (sizeof(s_fp_option) / sizeof(s_fp_option[0]))
