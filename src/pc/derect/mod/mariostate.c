@@ -3,6 +3,7 @@
 #include "game/mario.h"
 #include "game/level_update.h"
 #include "surface_terrains.h"
+#include "engine/surface_collision.h"
 #include "types.h"
 #include "sm64.h"
 //#include "PR/os_cont.h"
@@ -100,8 +101,6 @@ static bool adf_slipper = true;
 static bool adf_death_plane = false;
 static bool adf_all = false;
 
-static struct Surface ready_to_place;
-
 static const ConfigOption s_anti_death_floor_config[] = {
     BIND_BOOL ("lavas",       "Fuck Lava/QuickSand",     &adf_lavas),
     BIND_BOOL ("slipper",     "Fuck Ice/Slippery",       &adf_slipper),
@@ -114,58 +113,86 @@ static void adf_config(void) {
     Config_RenderOptions(s_anti_death_floor_config, ADF_COUNT);
 }
 
+// jsksksmmdmdlx check
+static bool adf_is_dangerous(s16 type) {
+    // 岩浆 / 流沙
+    if (adf_lavas) {
+        switch (type) {
+            case SURFACE_BURNING:
+            case SURFACE_DEEP_QUICKSAND:
+            case SURFACE_SHALLOW_QUICKSAND:
+            case SURFACE_QUICKSAND:
+            case SURFACE_MOVING_QUICKSAND:
+            case SURFACE_SHALLOW_MOVING_QUICKSAND:
+            case SURFACE_DEEP_MOVING_QUICKSAND:
+            case SURFACE_INSTANT_QUICKSAND:
+            case SURFACE_INSTANT_MOVING_QUICKSAND:
+                return true;
+            default:
+                break;
+        }
+    }
+    
+    // 滑地
+    if (adf_slipper) {
+        switch (type) {
+            case SURFACE_SLIPPERY:
+            case SURFACE_VERY_SLIPPERY:
+            case SURFACE_ICE:
+            case SURFACE_HARD_SLIPPERY:
+            case SURFACE_HARD_VERY_SLIPPERY:
+            case SURFACE_NOISE_SLIPPERY:
+            case SURFACE_NOISE_VERY_SLIPPERY:
+            case SURFACE_NO_CAM_COL_SLIPPERY:
+            case SURFACE_NO_CAM_COL_VERY_SLIPPERY:
+                return true;
+            default:
+                break;
+        }
+    }
+
+    // 陈死亡区域
+    if (adf_death_plane) {
+        switch (type) {
+            case SURFACE_DEATH_PLANE:
+            case SURFACE_VERTICAL_WIND:
+                return true;
+            default:
+                break;
+        }
+    }
+
+    return false;
+}
+
+// patch
+static void adf_patch_surface(struct Surface* floor) {
+    if (!floor) return;
+    if (floor->type == SURFACE_DEFAULT) return;
+
+    if (adf_all || adf_is_dangerous(floor->type)) {
+        floor->type = SURFACE_DEFAULT;
+    }
+}
+
+// 在物理更新(读取 m->floor)之前替换危险地面
 static void adf_loop(void) {
     struct MarioState* m = &gMarioStates[0];
-    if (!m || !m->floor) return;
+    if (!m) return;
     
-    s16 mario_floor = m->floor->type;
-    bool willReplace = false;
+    adf_patch_surface(m->floor);
     
-    if (adf_all) {
-        willReplace = true;
-    }
-    else {
-        // 防岩浆/QuickSand
-        if (adf_lavas) {
-            switch (mario_floor) {
-                case SURFACE_BURNING:
-                case SURFACE_DEEP_QUICKSAND:
-                case SURFACE_SHALLOW_QUICKSAND:
-                case SURFACE_MOVING_QUICKSAND:
-                case SURFACE_INSTANT_QUICKSAND:
-                case SURFACE_DEEP_MOVING_QUICKSAND:
-                case SURFACE_INSTANT_MOVING_QUICKSAND:
-                    willReplace = true;
-                    //break;
-            }
-        }
-        
-        // 防滑
-        if (adf_slipper && !willReplace) {
-            switch (mario_floor) {
-                case SURFACE_SLIPPERY:
-                case SURFACE_VERY_SLIPPERY:
-                case SURFACE_ICE:
-                case SURFACE_HARD_SLIPPERY:
-                case SURFACE_HARD_VERY_SLIPPERY:
-                //case SURFACE_HARD_NOT_SLIPPERY:
-                    willReplace = true;
-            }
-        }
-        
-        // 达成一定条件可直接导致陈死亡的地面
-        if (adf_death_plane && !willReplace) {
-            switch (mario_floor) {
-                case SURFACE_DEATH_PLANE:
-                case SURFACE_VERTICAL_WIND:
-                    willReplace = true;
-            }
-        }
-    }
+    struct Surface* floor = NULL;
+    find_floor(m->pos[0], m->pos[1], m->pos[2], &floor);
+    adf_patch_surface(floor);
     
-    // 重定向
-    if (willReplace) {
-        m->floor->type = SURFACE_DEFAULT;
+    static const f32 kOffsets[] = { -160.0f, -80.0f, 0.0f, 80.0f, 160.0f };
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            struct Surface* near = NULL;
+            find_floor(m->pos[0] + kOffsets[i], m->pos[1] + 100.0f, m->pos[2] + kOffsets[j], &near);
+            adf_patch_surface(near);
+        }
     }
 }
 
@@ -183,7 +210,7 @@ static void anyblj_loop(void){
 }
 
 // m.numLives = 100
-static void maxlife_enable(void) {
+static void maxlife_loop(void) {
     struct MarioState* m = &gMarioStates[0];
     m->numLives = 100;
 }
@@ -266,7 +293,7 @@ void module_mario_state(void){
     Module_HookConfig("GodMode", god_op);
     Config_RegisterModuleOptions("GodMode", s_god_mode_option, GMOD_COUNT);
     
-    Module_Register("MaxLives",   CAT_MARIO, false, NULL, green, maxlife_enable, NULL, NULL);
+    Module_Register("MaxLives",   CAT_MARIO, false, NULL, green, NULL, NULL, maxlife_loop);
     
     Module_Register("MultipleSpeed", CAT_MARIO, false, NULL, green, NULL, NULL, speed_loop);
     Module_HookConfig("MultipleSpeed", speed_config);
