@@ -288,6 +288,48 @@ static void fp_disable(void) {
     if (!fp_fall) memcpy(m->pos, orig_pos, sizeof(Vec3f));
 }
 
+// 按 (？？) 起飞
+// local function moon_jump_update(m)
+    // if m.controller.buttonDown & L_TRIG ~= 0 then
+        // m.faceAngle.y = m.intendedYaw - approach_s32(s16(m.intendedYaw - m.faceAngle.y), 0, 0x800, 0x800)
+        // m.vel.y = 40
+
+        // if m.action == ACT_FORWARD_GROUND_KB or
+           // m.action == ACT_BACKWARD_GROUND_KB or
+           // m.action == ACT_SOFT_FORWARD_GROUND_KB or
+           // m.action == ACT_HARD_BACKWARD_GROUND_KB or
+           // m.action == ACT_FORWARD_AIR_KB or
+           // m.action == ACT_BACKWARD_AIR_KB or
+           // m.action == ACT_HARD_FORWARD_AIR_KB or
+           // m.action == ACT_HARD_BACKWARD_AIR_KB or
+           // m.action == ACT_AIR_HIT_WALL then
+            // set_mario_action(m, ACT_FREEFALL, 0)
+        // end
+    // end
+// end
+
+void moon_flyer_loop(void) {
+    struct MarioState* m = &gMarioStates[0];
+    
+    if (m && (m->controller->buttonDown & L_TRIG) != 0) {
+        m->faceAngle[1] = m->intendedYaw - approach_s32(s16(m.intendedYaw - m.faceAngle[1]), 0, 0x800, 0x800);
+        m.vel[1] = 40;
+        
+        switch (m->action) {
+            case ACT_FORWARD_GROUND_KB:
+            case ACT_BACKWARD_GROUND_KB:
+            case ACT_SOFT_FORWARD_GROUND_KB:
+            case ACT_HARD_BACKWARD_GROUND_KB:
+            case ACT_FORWARD_AIR_KB:
+            case ACT_BACKWARD_AIR_KB:
+            case ACT_HARD_FORWARD_AIR_KB:
+            case ACT_HARD_BACKWARD_AIR_KB:
+            case ACT_AIR_HIT_WALL:
+                set_mario_action(m, ACT_FREEFALL, 0);
+        }
+    }
+}
+
 void module_mario_state(void){
     Module_Register("GodMode",    CAT_MARIO, false, NULL, green, NULL, god_mode_disable,        god_mode_loop);
     Module_HookConfig("GodMode", god_op);
@@ -298,6 +340,8 @@ void module_mario_state(void){
     Module_Register("MultipleSpeed", CAT_MARIO, false, NULL, green, NULL, NULL, speed_loop);
     Module_HookConfig("MultipleSpeed", speed_config);
     Config_RegisterModuleOptions("MultipleSpeed", s_speed_config, SPEEDX_COUNT);
+    
+    Module_Register("MoonFlyer",  CAT_MARIO, false, NULL, gree, NULL, NULL, moon_flyer_loop);
     
     Module_Register("InfWCap",    CAT_MARIO, false, NULL, MOD_COLOR_RED,   NULL, inf_wing_cap_disable,    inf_wing_cap_loop);
     Module_Register("InfMCap",    CAT_MARIO, false, NULL, MOD_COLOR_GREEN, NULL, inf_metal_cap_disable,   inf_metal_cap_loop);
